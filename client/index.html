@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+    <script data-main="scripts/main" src="scripts/require.js"></script>
+    <script>
+		require.config({
+			shim: {
+				'socket.io': {
+					exports: 'io'
+				},
+				'pixi': {
+					exports: 'PIXI'
+				}
+			},
+			paths: {
+				'socket.io': 'http://localhost:8080/socket.io/socket.io.js',
+				'pixi': 'pixi'
+			}
+		});
+	</script>
+</head>
+<body>
+
+</body>
+</html>
