@@ -41,7 +41,17 @@ function getUserBySid(socketId) {
 
 var inputUpdateData = {
     panzer: function(avatar, input) {
-        avatar.params.turretAngle = input.angle;
+        if (input.angle !== undefined) avatar.params.turretAngle = input.angle;
+        if (input.right !== undefined) avatar.params.bodyAngle += 0.02;
+        if (input.left !== undefined) avatar.params.bodyAngle -= 0.02;
+        if (input.down !== undefined) {
+            avatar.params.x += Math.cos(avatar.params.bodyAngle + Math.PI/2);
+            avatar.params.y += Math.sin(avatar.params.bodyAngle + Math.PI/2);
+        }
+        if (input.up !== undefined) {
+            avatar.params.x -= Math.cos(avatar.params.bodyAngle + Math.PI/2);
+            avatar.params.y -= Math.sin(avatar.params.bodyAngle + Math.PI/2);
+        }
     }
 };
 

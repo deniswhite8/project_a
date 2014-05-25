@@ -29,7 +29,7 @@ define(['pixi'], function (PIXI) {
 			body.position.x = params.x;
 			body.position.y = params.y;
 			body.rotation = params.bodyAngle;
-			turret.rotation = params.turretAngle;
+			turret.rotation = params.turretAngle + Math.PI/2 - params.bodyAngle;
 		};
 	};
 
