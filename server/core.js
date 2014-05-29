@@ -1,102 +1,32 @@
 var io = require('socket.io').listen(8080),
-    db = require('./db');
-
-function login(login, passwd) {
-    for (var i = 0; i < db.users.length; i++) {
-        var user = db.users[i];
-        if (user.login === login && user.passwd === passwd) {
-            return i;
-        }
-    }
-    return null;
-}
-
-var sid2uidData = {};
-
-function setSid2uid(socketId, userId) {
-    sid2uidData[socketId] = userId;
-}
-
-function sid2uid(socketId) {
-    return sid2uidData[socketId];
-}
-
-function getUser(userId) {
-    return db.users[userId];
-}
-
-function getUserPrimaryAvatar(userId) {
-    return db.avatars[db.users[userId].primaryAvatar];
-}
-
-function getAvatar(avatarId) {
-    return db.avatars[avatarId];
-}
-
-function getUserBySid(socketId) {
-    return db.users[sid2uid(socketId)];
-}
+    db = require('./db'),
+    avatarsManager = require('./avatar.js'),
+    usersManager = require('./user.js');
 
 
+avatarsManager.addAll(db.avatars);
+usersManager.addAll(db.users);
 
-var inputUpdateData = {
-    panzer: function(avatar, input) {
-        if (input.angle !== undefined) avatar.params.turretAngle = input.angle;
-        if (input.right !== undefined) avatar.params.bodyAngle += 0.02;
-        if (input.left !== undefined) avatar.params.bodyAngle -= 0.02;
-        if (input.down !== undefined) {
-            avatar.params.x += Math.cos(avatar.params.bodyAngle + Math.PI/2);
-            avatar.params.y += Math.sin(avatar.params.bodyAngle + Math.PI/2);
-        }
-        if (input.up !== undefined) {
-            avatar.params.x -= Math.cos(avatar.params.bodyAngle + Math.PI/2);
-            avatar.params.y -= Math.sin(avatar.params.bodyAngle + Math.PI/2);
-        }
-    }
-};
-
-function inputUpdate(avatar, input) {
-    inputUpdateData[avatar.name](avatar, input);
-}
 
 io.sockets.on('connection', function (socket) {
 
     socket.on('login', function (data) {
         
-        var id = login(data.login, data.passwd);
+        var user = usersManager.login(data.login, data.passwd);
 
-        if (id !== null) {
+        if (user !== null) {
 
-            setSid2uid(this.id, id);
+            usersManager.setSid(user, this.id);
 
-            getUser(id).socket = socket;
-            getUserPrimaryAvatar(id).active = true;
+            user.setSocket(socket);
+            user.getPrimaryAvatar().enable();
 
-            db.avatars.forEach(function(e, i) {
-                if (e.active) {
-                    socket.emit('new', {
-                        id: i,
-                        name: e.name
-                    });
+            avatarsManager.sendAll('both', socket.emit, this);
 
-                    socket.emit('upd', {
-                        id: i,
-                        params: e.params
-                    });
-                }
-            });
+            var primaryAvatarId = user.getPrimaryAvatar().getId();
+            socket.emit('ctrl', primaryAvatarId);
 
-            socket.emit('ctrl', getUser(id).primaryAvatar);
-
-            socket.broadcast.emit('new', {
-                id: getUser(id).primaryAvatar,
-                name: getUserPrimaryAvatar(id).name
-            });
-
-            socket.broadcast.emit('upd', {
-                id: getUser(id).primaryAvatar,
-                params: getUserPrimaryAvatar(id).params
-            });
+            avatarsManager.send('both', socket.broadcast.emit, primaryAvatarId, this);
         } else {
             socket.emit('error', 'login failed');
             socket.disconnect();
@@ -104,26 +34,22 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('disconnect', function () {
-        var user = getUserBySid(this.id);
+        var user = usersManager.getBySid(this.id);
         if(!user) return;
 
-        var avatarId = user.primaryAvatar;
-        getAvatar(avatarId).active = false;
-        socket.broadcast.emit('del', avatarId);
+        var primaryAvatar = user.getPrimaryAvatar();
+        primaryAvatar.disable();
+        socket.broadcast.emit('del', primaryAvatar.getId());
     });
 
     socket.on('input', function (data) {
-        var user = getUserBySid(this.id);
+        var user = usersManager.getBySid(this.id);
         if(!user) return;
 
-        var avatarId = user.primaryAvatar;
-        var avatar = getAvatar(avatarId);
-        
-        inputUpdate(avatar, data);
+        var primaryAvatar = user.getPrimaryAvatar();
+            primaryAvatarId = primaryAvatar.getId();
 
-        io.sockets.emit('upd', {
-            id: avatarId,
-            params: avatar.params
-        });
+        avatarsManager.input(primaryAvatarId, data);
+        avatarsManager.send('upd', io.sockets.emit, primaryAvatarId, io.sockets);
     });
 });
