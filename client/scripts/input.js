@@ -27,7 +27,7 @@ define(function () {
 			view.addEventListener('mousemove', function(e) {
 			    var mouseX = e.clientX - rendererRect.left;
 			    var mouseY = e.clientY - rendererRect.top;
-			    mouseAngle = Math.atan2(mouseY - height/2, mouseX - width/2);
+			    mouseAngle = Math.atan2(mouseY - height/2, mouseX - width/2) + Math.PI/2;
 			}, false);
 
 			view.addEventListener('mousedown', function(e) {

@@ -12,8 +12,8 @@ define(['pixi'], function (PIXI) {
 	}
 
 	avatars.panzer = function() {
-		var turret = load("turret.png"),
-			body   = load("body.png");
+		var turret = load('turret.png'),
+			body   = load('body.png');
 
 		this.init = function() {
 			turret.anchor.x = 0.5;
@@ -29,7 +29,24 @@ define(['pixi'], function (PIXI) {
 			body.position.x = params.x;
 			body.position.y = params.y;
 			body.rotation = params.bodyAngle;
-			turret.rotation = params.turretAngle + Math.PI/2 - params.bodyAngle;
+			turret.rotation = params.turretAngle - params.bodyAngle;
+		};
+	};
+
+	avatars.man = function() {
+		var body = load('man.png');
+
+		this.init = function() {
+			body.anchor.x = 0.5;
+			body.anchor.y = 0.5;
+
+			return body;
+		};
+
+		this.update = function(params) {
+			body.position.x = params.x;
+			body.position.y = params.y;
+			body.rotation = params.bodyAngle;
 		};
 	};
 

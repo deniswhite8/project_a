@@ -30,8 +30,6 @@ module.exports = {
 		var id = users.length,
 			user = new User(id, login, passwd, primaryAvatar, foreignAvatar);
 		users.push(user);
-
-		return user;
 	},
 
 	addAll: function(dbArray) {
