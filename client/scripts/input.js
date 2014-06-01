@@ -61,10 +61,10 @@ define(function () {
 				left = keyIsPressed('A'),
 				right = keyIsPressed('D');
 
-			if (up) newInput.up = up;
-			if (down) newInput.down = down;
-			if (left) newInput.left = left;
-			if (right) newInput.right = right;
+			/*if (up)*/ newInput.up = up;
+			/*if (down)*/ newInput.down = down;
+			/*if (left)*/ newInput.left = left;
+			/*if (right)*/ newInput.right = right;
 
 			if (Object.keys(newInput).length == 0) newInput = null;
 			return newInput;

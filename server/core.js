@@ -3,9 +3,16 @@ var io = require('socket.io').listen(8080),
     avatarsManager = require('./avatar.js'),
     usersManager = require('./user.js');
 
+io.set('log level', 0);
 
 avatarsManager.addAll(db.avatars);
 usersManager.addAll(db.users);
+
+
+setInterval(function() {
+    avatarsManager.update(1/10);
+    avatarsManager.sendAll('upd', io.sockets.emit, io.sockets);
+}, 1/10);
 
 
 io.sockets.on('connection', function (socket) {
@@ -50,6 +57,5 @@ io.sockets.on('connection', function (socket) {
             primaryAvatarId = primaryAvatar.getId();
 
         avatarsManager.input(primaryAvatarId, data);
-        avatarsManager.send('upd', io.sockets.emit, primaryAvatarId, io.sockets);
     });
 });

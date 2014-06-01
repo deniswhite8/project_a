@@ -14,6 +14,11 @@ require(['socket.io', 'pixi', 'avatars', 'input'], function(io, PIXI, avatars, i
 	input.init(renderer.view);
 	requestAnimFrame(animate);
 
+    var drop = new PIXI.Sprite(PIXI.Texture.fromImage("img/drop.png"));
+    drop.position.x = 0;
+    drop.position.y = 0;
+    viewPort.addChild(drop);
+
 	function animate() {
 		frameCounter++;
 		if(frameCounter % 12) {
