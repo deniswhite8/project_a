@@ -4,7 +4,8 @@ define(function () {
 		pressedKeys = [],
 		width, height,
 		arrayOfAvatars,
-		oldAngle = 0;
+		oldInput = {};
+		//oldAngle = 0;
 
 	function keyIsPressed(keyCode) {
 		if (typeof keyCode == 'string')
@@ -48,25 +49,41 @@ define(function () {
 		},
 
 		getInputData: function() {
-			var newInput = {};
+			// var newInput = {};
 			
-			var angle = getMouseAngle();
-			if (angle != oldAngle) {
-				newInput.angle = angle;
-				oldAngle = angle;
-			}
+			// var angle = getMouseAngle();
+			// if (angle != oldAngle) {
+			// 	newInput.angle = angle;
+			// 	oldAngle = angle;
+			// }
 
-			var up = keyIsPressed('W'),
+			// var up = keyIsPressed('W'),
+			// 	down = keyIsPressed('S'),
+			// 	left = keyIsPressed('A'),
+			// 	right = keyIsPressed('D');
+
+			// /*if (up)*/ newInput.up = up;
+			// /*if (down)*/ newInput.down = down;
+			// /*if (left)*/ newInput.left = left;
+			// /*if (right)*/ newInput.right = right;
+
+			// if (Object.keys(newInput).length == 0) newInput = null;
+			// return newInput;
+
+			var angle = getMouseAngle(),
+				up = keyIsPressed('W'),
 				down = keyIsPressed('S'),
 				left = keyIsPressed('A'),
 				right = keyIsPressed('D');
 
-			/*if (up)*/ newInput.up = up;
-			/*if (down)*/ newInput.down = down;
-			/*if (left)*/ newInput.left = left;
-			/*if (right)*/ newInput.right = right;
+			var newInput = {};
 
-			if (Object.keys(newInput).length == 0) newInput = null;
+			if (oldInput.angle !== angle) oldInput.angle = newInput.angle = angle;
+			if (oldInput.up !== up) oldInput.up = newInput.up = up;
+			if (oldInput.down !== down) oldInput.down = newInput.down = down;
+			if (oldInput.left !== left) oldInput.left = newInput.left = left;
+			if (oldInput.right !== right) oldInput.right = newInput.right = right;
+
 			return newInput;
 		}
 	};

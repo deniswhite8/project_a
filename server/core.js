@@ -23,6 +23,7 @@ io.sockets.on('connection', function (socket) {
 
         if (user !== null) {
 
+            user._oldInput = {};
             usersManager.setSid(user, this.id);
 
             user.setSocket(socket);
@@ -55,6 +56,21 @@ io.sockets.on('connection', function (socket) {
 
         var primaryAvatar = user.getPrimaryAvatar();
             primaryAvatarId = primaryAvatar.getId();
+
+        if (data.angle === undefined) data.angle = user._oldInput.angle;
+        else user._oldInput.angle = data.angle;
+
+        if (data.up === undefined) data.up = user._oldInput.up;
+        else user._oldInput.up = data.up;
+
+        if (data.down === undefined) data.down = user._oldInput.down;
+        else user._oldInput.down = data.down;
+
+        if (data.left === undefined) data.left = user._oldInput.left;
+        else user._oldInput.left = data.left;
+        
+        if (data.right === undefined) data.right = user._oldInput.right;
+        else user._oldInput.right = data.right;
 
         avatarsManager.input(primaryAvatarId, data);
     });

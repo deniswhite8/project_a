@@ -27,7 +27,7 @@ avatarNames.panzer = function (args) {
 	};
 
 	this.input = function(input) {
-		if (input.angle !== undefined) turretAngle = input.angle;
+		/*if (input.angle !== undefined)*/ turretAngle = input.angle;
         if (input.right) this.rotate(this.angle + 0.02);
         if (input.left) this.rotate(this.angle - 0.02);
 
@@ -58,7 +58,7 @@ avatarNames.man = function (args) {
 	};
 
 	this.input = function(input) {
-		if (input.angle !== undefined) this.rotate(input.angle);
+		/*if (input.angle !== undefined)*/ this.rotate(input.angle);
         
 
         var dx = 0, dy = 0;
