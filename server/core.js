@@ -5,6 +5,8 @@ var io = require('socket.io').listen(8080),
 
 io.set('log level', 0);
 
+avatarsManager.addClasses('avatars');
+
 avatarsManager.addAll(db.avatars);
 usersManager.addAll(db.users);
 
@@ -25,16 +27,13 @@ io.sockets.on('connection', function (socket) {
 
             user._oldInput = {};
             usersManager.setSid(user, this.id);
-
-            user.setSocket(socket);
             user.getPrimaryAvatar().enable();
 
             avatarsManager.sendAll('both', socket.emit, this);
-
             var primaryAvatarId = user.getPrimaryAvatar().getId();
-            socket.emit('ctrl', primaryAvatarId);
-
             avatarsManager.send('both', socket.broadcast.emit, primaryAvatarId, this);
+
+            user.setSocket(socket, this);
         } else {
             socket.emit('error', 'login failed');
             socket.disconnect();

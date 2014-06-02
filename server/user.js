@@ -8,12 +8,44 @@ function User(id, login, passwd, primaryAvatar, foreignAvatar) {
 	this.login = login;
 	this.passwd = passwd;
 
+	var selfSocket;
+
 	this.getPrimaryAvatar = function () {
-		return avatarsManager.get(primaryAvatar);
+		return primaryAvatar;
 	};
 
-	this.setSocket = function (_socket) {
+	this.getForeignAvatar = function () {
+		return foreignAvatar;
+	};
+
+	this.setPrimaryAvatar = function (avatar) {
+		primaryAvatar.user = null;
+		avatar.user = this;
+
+		primaryAvatar = avatar;
+
+		socket.emit.call(selfSocket, 'ctrl', primaryAvatar.getId());
+	};
+
+	this.setForeignAvatar = function (avatar) {
+		foreignAvatar.user = null;
+		if(avatar) avatar.user = this;
+
+		foreignAvatar = avatar;
+
+		if(avatar) {
+			socket.emit.call(selfSocket, 'ctrl', primaryAvatar.getId());
+		} else {
+			socket.emit(selfSocket, 'ctrl', foreignAvatar.getId());
+		}
+	};
+
+	this.setSocket = function (_socket, self) {
 		socket = _socket;
+		selfSocket = self;
+
+		if(foreignAvatar) this.setForeignAvatar(foreignAvatar);
+		else this.setPrimaryAvatar(primaryAvatar);
 	};
 
 	this.getSocket = function () {
@@ -28,7 +60,7 @@ function User(id, login, passwd, primaryAvatar, foreignAvatar) {
 module.exports = {
 	add: function(login, passwd, primaryAvatar, foreignAvatar) {
 		var id = users.length,
-			user = new User(id, login, passwd, primaryAvatar, foreignAvatar);
+			user = new User(id, login, passwd, avatarsManager.get(primaryAvatar), avatarsManager.get(foreignAvatar));
 		users.push(user);
 	},
 

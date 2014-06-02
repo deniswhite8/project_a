@@ -5,73 +5,6 @@ var avatars = [],
 
 space.iterations = 10;
 
-
-avatarNames.panzer = function (args) {
-	var	turretAngle = args.turretAngle,
-		speed = 5;
-
-	this.init(args);
-	this.phInit(100, 55, 55, true);
-
-
-	this.updMessage = function() {
-		return {
-			id: this.id,
-			params: {
-				x: this.x,
-				y: this.y,
-				bodyAngle: this.angle,
-				turretAngle: turretAngle
-			}
-		};
-	};
-
-	this.input = function(input) {
-		/*if (input.angle !== undefined)*/ turretAngle = input.angle;
-        if (input.right) this.rotate(this.angle + 0.02);
-        if (input.left) this.rotate(this.angle - 0.02);
-
-        var dy = 0;
-        if (input.down) dy++;
-        if (input.up) dy--;
-
-        if(dy) this.move(this.angle + Math.atan2(dy, 0), speed);
-        else this.stop();
-	};
-};
-
-avatarNames.man = function (args) {
-	var	speed = 5;
-
-	this.init(args);
-	this.phInit(10, 20, 20, false);
-
-	this.updMessage = function() {
-		return {
-			id: this.id,
-			params: {
-				x: this.x,
-				y: this.y,
-				bodyAngle: this.angle
-			}
-		};
-	};
-
-	this.input = function(input) {
-		/*if (input.angle !== undefined)*/ this.rotate(input.angle);
-        
-
-        var dx = 0, dy = 0;
-        if (input.down) dy++;
-        if (input.up) dy--;
-        if (input.right) dx++;
-        if (input.left) dx--;
-
-        if(dx || dy) this.move(this.angle + Math.atan2(dy, dx), speed);
-        else this.stop();
-	};
-};
-
 function inherit(A) {
 
 	A.prototype.init = function(args) {
@@ -182,9 +115,6 @@ function inherit(A) {
 	};
 }
 
-inherit(avatarNames.panzer);
-inherit(avatarNames.man);
-
 
 module.exports = {
 	add: function(args) {
@@ -240,7 +170,15 @@ module.exports = {
 	update: function(dt) {
 		space.step(dt);
 		avatars.forEach(function(e) {
-			if(e.isActive()) e.phUpdate();
+			if(e.isActive()) e.update();
+		});
+	},
+
+	addClasses: function(path) {
+		require("fs").readdirSync("./" + path).forEach(function(file) {
+			var A = require("./" + path + "/" + file);
+			avatarNames[A.name] = A;
+			inherit(A);
 		});
 	}
 };

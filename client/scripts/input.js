@@ -49,27 +49,7 @@ define(function () {
 		},
 
 		getInputData: function() {
-			// var newInput = {};
 			
-			// var angle = getMouseAngle();
-			// if (angle != oldAngle) {
-			// 	newInput.angle = angle;
-			// 	oldAngle = angle;
-			// }
-
-			// var up = keyIsPressed('W'),
-			// 	down = keyIsPressed('S'),
-			// 	left = keyIsPressed('A'),
-			// 	right = keyIsPressed('D');
-
-			// /*if (up)*/ newInput.up = up;
-			// /*if (down)*/ newInput.down = down;
-			// /*if (left)*/ newInput.left = left;
-			// /*if (right)*/ newInput.right = right;
-
-			// if (Object.keys(newInput).length == 0) newInput = null;
-			// return newInput;
-
 			var angle = getMouseAngle(),
 				up = keyIsPressed('W'),
 				down = keyIsPressed('S'),
