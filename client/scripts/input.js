@@ -5,7 +5,6 @@ define(function () {
 		width, height,
 		arrayOfAvatars,
 		oldInput = {};
-		//oldAngle = 0;
 
 	function keyIsPressed(keyCode) {
 		if (typeof keyCode == 'string')

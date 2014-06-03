@@ -13,6 +13,7 @@ function inherit(A) {
 		this.x = args.x;
 		this.y = args.y;
 		this.angle = args.angle;
+		this.hp = args.hp;
 	};
 
 	A.prototype.getId = function() {

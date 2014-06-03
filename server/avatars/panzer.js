@@ -14,7 +14,8 @@ function panzer(args) {
 				x: this.x,
 				y: this.y,
 				bodyAngle: this.angle,
-				turretAngle: turretAngle
+				turretAngle: turretAngle,
+				hp: this.hp
 			}
 		};
 	};

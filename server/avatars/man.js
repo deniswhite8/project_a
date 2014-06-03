@@ -12,7 +12,8 @@ function man(args) {
 			params: {
 				x: this.x,
 				y: this.y,
-				bodyAngle: this.angle
+				bodyAngle: this.angle,
+				hp: this.hp
 			}
 		};
 	};
