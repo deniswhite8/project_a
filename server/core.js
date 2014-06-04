@@ -24,16 +24,11 @@ io.sockets.on('connection', function (socket) {
         var user = usersManager.login(data.login, data.passwd);
 
         if (user !== null) {
-
             user._oldInput = {};
             usersManager.setSid(user, this.id);
-            user.getPrimaryAvatar().enable();
-
-            avatarsManager.sendAll('both', socket.emit, this);
-            var primaryAvatarId = user.getPrimaryAvatar().getId();
-            avatarsManager.send('both', socket.broadcast.emit, primaryAvatarId, this);
 
             user.setSocket(socket, this);
+            user.init();
         } else {
             socket.emit('error', 'login failed');
             socket.disconnect();
@@ -44,17 +39,12 @@ io.sockets.on('connection', function (socket) {
         var user = usersManager.getBySid(this.id);
         if(!user) return;
 
-        var primaryAvatar = user.getPrimaryAvatar();
-        primaryAvatar.disable();
-        socket.broadcast.emit('del', primaryAvatar.getId());
+        user.disconnect();
     });
 
     socket.on('input', function (data) {
         var user = usersManager.getBySid(this.id);
         if(!user) return;
-
-        var primaryAvatar = user.getPrimaryAvatar();
-            primaryAvatarId = primaryAvatar.getId();
 
         if (data.angle === undefined) data.angle = user._oldInput.angle;
         else user._oldInput.angle = data.angle;
@@ -71,6 +61,6 @@ io.sockets.on('connection', function (socket) {
         if (data.right === undefined) data.right = user._oldInput.right;
         else user._oldInput.right = data.right;
 
-        avatarsManager.input(primaryAvatarId, data);
+        user.input(data);
     });
 });

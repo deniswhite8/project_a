@@ -4,7 +4,9 @@ define(function () {
 		pressedKeys = [],
 		width, height,
 		arrayOfAvatars,
-		oldInput = {};
+		oldInput = {},
+		dx, dy,
+		selectId;
 
 	function keyIsPressed(keyCode) {
 		if (typeof keyCode == 'string')
@@ -16,7 +18,20 @@ define(function () {
 		return mouseAngle;
 	}
 
+	function getSelectId() {
+		return selectId;
+	}
+
 	return {
+		setOffset: function(_dx, _dy) {
+			dx = _dx;
+			dy = _dy;
+		},
+
+		getSelectId: function() {
+			return getSelectId();
+		},
+
 		init: function (view, _arrayOfAvatars) {
 			arrayOfAvatars = _arrayOfAvatars;
 
@@ -31,7 +46,17 @@ define(function () {
 			}, false);
 
 			view.addEventListener('mousedown', function(e) {
+				var mouseX = e.clientX - rendererRect.left;
+			    var mouseY = e.clientY - rendererRect.top;
 
+			    selectId = null;
+			   	for (var i in arrayOfAvatars) {
+			   		var e = arrayOfAvatars[i];
+			    	if( Math.pow(e._sprite.position.x - mouseX + dx, 2) + Math.pow(e._sprite.position.y - mouseY + dy, 2) < e.radius*e.radius ) {
+			    		selectId = i;
+			    		break;
+			    	}
+			    }
 		    }, false);
 
 		    view.addEventListener('mouseup', function(e) {
@@ -53,7 +78,8 @@ define(function () {
 				up = keyIsPressed('W'),
 				down = keyIsPressed('S'),
 				left = keyIsPressed('A'),
-				right = keyIsPressed('D');
+				right = keyIsPressed('D'),
+				selectId = getSelectId();
 
 			var newInput = {};
 
@@ -62,6 +88,7 @@ define(function () {
 			if (oldInput.down !== down) oldInput.down = newInput.down = down;
 			if (oldInput.left !== left) oldInput.left = newInput.left = left;
 			if (oldInput.right !== right) oldInput.right = newInput.right = right;
+			if (oldInput.selectId !== selectId) oldInput.selectId = newInput.selectId = selectId;
 
 			return newInput;
 		}

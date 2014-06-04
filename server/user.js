@@ -18,34 +18,53 @@ function User(id, login, passwd, primaryAvatar, foreignAvatar) {
 		return foreignAvatar;
 	};
 
-	this.setPrimaryAvatar = function (avatar) {
+	this.setPrimaryAvatar = function (avatar, _first) {
 		primaryAvatar.user = null;
 		avatar.user = this;
 
 		primaryAvatar = avatar;
 
-		socket.emit.call(selfSocket, 'ctrl', primaryAvatar.getId());
+		if(!_first) socket.emit.call(selfSocket, 'ctrl', primaryAvatar.getId());
 	};
 
-	this.setForeignAvatar = function (avatar) {
-		foreignAvatar.user = null;
+	this.setForeignAvatar = function (avatar, _first) {
+		if(foreignAvatar) foreignAvatar.user = null;
 		if(avatar) avatar.user = this;
 
 		foreignAvatar = avatar;
 
 		if(avatar) {
-			socket.emit.call(selfSocket, 'ctrl', primaryAvatar.getId());
+			primaryAvatar.disable();
+			if(!_first) socket.emit.call(selfSocket, 'ctrl', foreignAvatar.getId());
+			socket.broadcast.emit.call(selfSocket, 'del', primaryAvatar.getId());
 		} else {
-			socket.emit(selfSocket, 'ctrl', foreignAvatar.getId());
+			this.setPrimaryAvatar(primaryAvatar, true);
+			primaryAvatar.enable();
+            avatarsManager.send('both', socket.broadcast.emit, primaryAvatar.getId(), selfSocket);
 		}
 	};
 
 	this.setSocket = function (_socket, self) {
 		socket = _socket;
 		selfSocket = self;
+	};
 
-		if(foreignAvatar) this.setForeignAvatar(foreignAvatar);
-		else this.setPrimaryAvatar(primaryAvatar);
+	this.init = function() {
+        if(foreignAvatar) {
+        	foreignAvatar.enable();
+        	avatarsManager.send('both', socket.broadcast.emit, foreignAvatar.getId(), selfSocket);
+        }
+		this.setForeignAvatar(foreignAvatar, true);
+
+        avatarsManager.sendAll('both', socket.emit, selfSocket);
+
+		if(foreignAvatar) socket.emit.call(selfSocket, 'ctrl', foreignAvatar.getId());
+		else socket.emit.call(selfSocket, 'ctrl', primaryAvatar.getId());
+	};
+
+	this.input = function(data) {
+		if(foreignAvatar) foreignAvatar.input(data);
+		else primaryAvatar.input(data);
 	};
 
 	this.getSocket = function () {
@@ -54,6 +73,16 @@ function User(id, login, passwd, primaryAvatar, foreignAvatar) {
 
 	this.getId = function() {
 		return id;
+	};
+
+	this.disconnect = function() {
+		if (foreignAvatar) {
+			foreignAvatar.disable();
+			socket.broadcast.emit.call(selfSocket, 'del', foreignAvatar.getId());
+		} else {
+			primaryAvatar.disable();
+			socket.broadcast.emit.call(selfSocket, 'del', primaryAvatar.getId());
+		}
 	};
 }
 

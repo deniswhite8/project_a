@@ -17,6 +17,8 @@ define(['pixi'], function (PIXI) {
 			hpBorder = load('border.png'),
 			hpLine = load('line.png');
 
+		this.radius = 20;
+
 		this.init = function() {
 			turret.anchor.x = 0.5;
 			turret.anchor.y = 0.8;
@@ -49,6 +51,8 @@ define(['pixi'], function (PIXI) {
 		var body = load('man.png'),
 			hpCirlce = load('areal.png'),
 			pivot = new PIXI.DisplayObjectContainer();
+
+		this.radius = 10;
 
 		this.init = function() {
 			body.anchor.x = 0.5;

@@ -21,6 +21,8 @@ function inherit(A) {
 	};
 
 	A.prototype.enable = function() {
+		if (this.active) return;
+
 		space.addBody(this._phBody);
 		space.addBody(this._phControlBody);
 		space.addShape(this._phShape);
@@ -31,6 +33,8 @@ function inherit(A) {
 	};
 
 	A.prototype.disable = function() {
+		if (!this.active) return;
+
 		space.removeBody(this._phBody);
 		space.removeBody(this._phControlBody);
 		space.removeShape(this._phShape);
@@ -83,7 +87,10 @@ function inherit(A) {
 		this._phUseAng = useAngle;
 		this._phOldVel = cp.vzero;
 
-		if (this.isActive()) this.enable();
+		if (this.isActive()) {
+			this.active = false;
+			this.enable();
+		}
 	};
 
 	A.prototype.move = function(angle, speed) {
@@ -158,10 +165,6 @@ module.exports = {
 				module.exports.send(type, fn, e.getId(), self);
 			}
 		});
-	},
-
-	input: function(id, input) {
-		avatars[id].input(input);
 	},
 
 	get: function(id) {

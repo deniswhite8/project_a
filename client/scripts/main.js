@@ -6,18 +6,25 @@ require(['socket.io', 'pixi', 'avatars', 'input'], function(io, PIXI, avatars, i
 		stage = new PIXI.Stage(0x000000),
 		renderer = PIXI.autoDetectRenderer(400, 300),
 		controlAvatar = null,
-		viewPort = new PIXI.DisplayObjectContainer();
+		viewPort = new PIXI.DisplayObjectContainer(),
+		controlAvatarId;
 
 
 	stage.addChild(viewPort);
 	document.body.appendChild(renderer.view);
-	input.init(renderer.view);
+	input.init(renderer.view, arrayOfAvatars);
 	requestAnimFrame(animate);
 
     var drop = new PIXI.Sprite(PIXI.Texture.fromImage("img/drop.png"));
     drop.position.x = 0;
     drop.position.y = 0;
     viewPort.addChild(drop);
+
+    var aim = new PIXI.Sprite(PIXI.Texture.fromImage("img/aim.png"));
+    aim.visible = false;
+    aim.anchor.x = 0.5;
+    aim.anchor.y = 0.5;
+    viewPort.addChild(aim);
 
 	function animate() {
 		frameCounter++;
@@ -31,7 +38,20 @@ require(['socket.io', 'pixi', 'avatars', 'input'], function(io, PIXI, avatars, i
 			viewPort.position.y = 300/2 - controlAvatar._sprite.position.y;
 		}
 
-	    requestAnimFrame(animate); 
+		input.setOffset(viewPort.position.x, viewPort.position.y);
+		var selectId = input.getSelectId();
+		if(selectId && selectId != controlAvatarId) {
+			var selectAvatar = arrayOfAvatars[selectId];
+			aim.visible = true;
+			aim.scale.x = aim.scale.y = selectAvatar.radius / 10;
+
+			aim.position.x = arrayOfAvatars[selectId]._sprite.x;
+			aim.position.y = arrayOfAvatars[selectId]._sprite.y;
+		} else {
+			aim.visible = false;
+		}
+
+	    requestAnimFrame(animate);
 	    renderer.render(stage);
 	}
 
@@ -45,6 +65,9 @@ require(['socket.io', 'pixi', 'avatars', 'input'], function(io, PIXI, avatars, i
 		avatar._sprite = sprite;
 
 		arrayOfAvatars[data.id] = avatar;
+
+		viewPort.removeChild(aim);
+		viewPort.addChild(aim);
 	});
 
 	socket.on('upd', function (data) {
@@ -60,6 +83,7 @@ require(['socket.io', 'pixi', 'avatars', 'input'], function(io, PIXI, avatars, i
 
 
 	socket.on('ctrl', function (id) {
+		controlAvatarId = id;
 		controlAvatar = arrayOfAvatars[id];
 	});
 
