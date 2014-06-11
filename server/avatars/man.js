@@ -3,7 +3,7 @@ module.exports = man;
 function man(args) {
 	var	speed = 5;
 
-	this.init(args);
+	this.init(args, 20);
 	this.phInit(10, 20, 20, false);
 
 	this.updMessage = function() {
@@ -29,6 +29,11 @@ function man(args) {
 
         if(dx || dy) this.move(this.angle + Math.atan2(dy, dx), speed);
         else this.stop();
+
+        var inAvatar = input.inOut;
+        if (inAvatar !== null && inAvatar !== undefined && inAvatar.name == 'panzer' && this.reach(inAvatar) && inAvatar.user == null) {
+        	this.user.setForeignAvatar(inAvatar);
+        }
 	};
 
 	this.update = function() {

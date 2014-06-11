@@ -32,6 +32,10 @@ define(function () {
 			return getSelectId();
 		},
 
+		clearSelectId: function() {
+			selectId = null;
+		},
+
 		init: function (view, _arrayOfAvatars) {
 			arrayOfAvatars = _arrayOfAvatars;
 
@@ -52,7 +56,7 @@ define(function () {
 			    selectId = null;
 			   	for (var i in arrayOfAvatars) {
 			   		var e = arrayOfAvatars[i];
-			    	if( Math.pow(e._sprite.position.x - mouseX + dx, 2) + Math.pow(e._sprite.position.y - mouseY + dy, 2) < e.radius*e.radius ) {
+			    	if (Math.pow(e._sprite.position.x - mouseX + dx, 2) + Math.pow(e._sprite.position.y - mouseY + dy, 2) < e.radius*e.radius) {
 			    		selectId = i;
 			    		break;
 			    	}
@@ -79,7 +83,7 @@ define(function () {
 				down = keyIsPressed('S'),
 				left = keyIsPressed('A'),
 				right = keyIsPressed('D'),
-				selectId = getSelectId();
+				inOut = keyIsPressed('E');
 
 			var newInput = {};
 
@@ -88,7 +92,16 @@ define(function () {
 			if (oldInput.down !== down) oldInput.down = newInput.down = down;
 			if (oldInput.left !== left) oldInput.left = newInput.left = left;
 			if (oldInput.right !== right) oldInput.right = newInput.right = right;
-			if (oldInput.selectId !== selectId) oldInput.selectId = newInput.selectId = selectId;
+
+
+			if (inOut) {
+				if(!oldInput.inOut) {
+					oldInput.inOut = true;
+					newInput.inOut = getSelectId();
+				}
+			} else {
+				oldInput.inOut = false;
+			}
 
 			return newInput;
 		}

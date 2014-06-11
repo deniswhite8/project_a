@@ -49,6 +49,8 @@ require(['socket.io', 'pixi', 'avatars', 'input'], function(io, PIXI, avatars, i
 			aim.position.y = arrayOfAvatars[selectId]._sprite.y;
 		} else {
 			aim.visible = false;
+			selectId == null;
+			input.clearSelectId();
 		}
 
 	    requestAnimFrame(animate);
@@ -58,6 +60,8 @@ require(['socket.io', 'pixi', 'avatars', 'input'], function(io, PIXI, avatars, i
 
 
 	socket.on('new', function (data) {
+		if (arrayOfAvatars[data.id]) return;
+
 		var avatar = new avatars[data.name](),
 			sprite = avatar.init();
 
@@ -72,7 +76,7 @@ require(['socket.io', 'pixi', 'avatars', 'input'], function(io, PIXI, avatars, i
 
 	socket.on('upd', function (data) {
 		var avatar = arrayOfAvatars[data.id];
-		avatar.update(data.params);
+		if (avatar) avatar.update(data.params);
 	});
 
 	socket.on('del', function (id) {

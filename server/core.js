@@ -27,7 +27,7 @@ io.sockets.on('connection', function (socket) {
             user._oldInput = {};
             usersManager.setSid(user, this.id);
 
-            user.setSocket(socket, this);
+            user.setSocket(socket, io.sockets, this);
             user.init();
         } else {
             socket.emit('error', 'login failed');
@@ -60,6 +60,8 @@ io.sockets.on('connection', function (socket) {
         
         if (data.right === undefined) data.right = user._oldInput.right;
         else user._oldInput.right = data.right;
+
+        if (data.inOut !== null && data.inOut !== undefined) data.inOut = avatarsManager.get(data.inOut);
 
         user.input(data);
     });

@@ -7,13 +7,19 @@ space.iterations = 10;
 
 function inherit(A) {
 
-	A.prototype.init = function(args) {
+	A.prototype.init = function(args, radius) {
 		this.name = args.name;
 		this.active = args.active;
 		this.x = args.x;
 		this.y = args.y;
 		this.angle = args.angle;
 		this.hp = args.hp;
+
+		this._radius = radius;
+	};
+
+	A.prototype.reach = function(avatar) {
+		return Math.pow(this.x - avatar.x, 2) + Math.pow(this.y - avatar.y, 2) <= Math.pow(this._radius + avatar._radius, 2);
 	};
 
 	A.prototype.getId = function() {
@@ -120,6 +126,12 @@ function inherit(A) {
 		this.x = pos.x;
 		this.y = pos.y;
 		if( this._phUseAng) this.angle = this._phAng;
+	};
+
+	A.prototype.copyTransform = function(avatar) {
+		var pos = avatar._phBody.getPos();
+		this._phBody.setPos(cp.v(pos.x, pos.y));
+		this.rotate(avatar.angle);
 	};
 }
 
