@@ -51,6 +51,19 @@ function User(id, login, passwd, primaryAvatar, foreignAvatar) {
 		this4socket = _this4socket;
 	};
 
+
+	this.sendNewChunk = function (obj) {
+		selfSocket.emit.call(this4socket, 'new_c', obj);
+	};
+
+	this.sendDeleteChunk = function (obj) {
+		selfSocket.emit.call(this4socket, 'del_c', obj);
+	};
+
+	this.sendMapConf = function (conf) {
+		selfSocket.emit.call(this4socket, 'map_cnf', conf);
+	};
+
 	this.init = function() {
         if(foreignAvatar) {
         	foreignAvatar.enable();

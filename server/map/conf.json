@@ -1,0 +1,5 @@
+{
+	"TILE_SIZE": 42,
+	"CHUNK_SIZE": 10,
+	"CHUNK_COUNT": 10
+}

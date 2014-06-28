@@ -1,7 +1,8 @@
 var io = require('socket.io').listen(8080),
     db = require('./db'),
     avatarsManager = require('./avatar.js'),
-    usersManager = require('./user.js');
+    usersManager = require('./user.js'),
+    map = require('./map.js');
 
 io.set('log level', 0);
 
@@ -10,11 +11,17 @@ avatarsManager.addClasses('avatars');
 avatarsManager.addAll(db.avatars);
 usersManager.addAll(db.users);
 
+map.loadMap('map');
+
+
 
 setInterval(function() {
     avatarsManager.update(1/10);
     avatarsManager.sendAll('upd', io.sockets.emit, io.sockets);
+    map.update();
 }, 1/10);
+
+
 
 
 io.sockets.on('connection', function (socket) {
@@ -29,6 +36,8 @@ io.sockets.on('connection', function (socket) {
 
             user.setSocket(socket, io.sockets, this);
             user.init();
+
+            map.registerUser(user);
         } else {
             socket.emit('error', 'login failed');
             socket.disconnect();
@@ -40,6 +49,8 @@ io.sockets.on('connection', function (socket) {
         if(!user) return;
 
         user.disconnect();
+
+        map.unregisterUser(user);
     });
 
     socket.on('input', function (data) {

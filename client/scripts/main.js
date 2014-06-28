@@ -1,4 +1,4 @@
-require(['socket.io', 'pixi', 'avatars', 'input'], function(io, PIXI, avatars, input) {
+require(['socket.io', 'pixi', 'avatars', 'input', 'map'], function(io, PIXI, avatars, input, map) {
 
 	var arrayOfAvatars = {},
 		socket = io.connect('http://localhost:8080'),
@@ -7,7 +7,8 @@ require(['socket.io', 'pixi', 'avatars', 'input'], function(io, PIXI, avatars, i
 		renderer = PIXI.autoDetectRenderer(400, 300),
 		controlAvatar = null,
 		viewPort = new PIXI.DisplayObjectContainer(),
-		controlAvatarId;
+		controlAvatarId,
+		mapPivot = map.pivot;
 
 
 	stage.addChild(viewPort);
@@ -15,10 +16,7 @@ require(['socket.io', 'pixi', 'avatars', 'input'], function(io, PIXI, avatars, i
 	input.init(renderer.view, arrayOfAvatars);
 	requestAnimFrame(animate);
 
-    var drop = new PIXI.Sprite(PIXI.Texture.fromImage("img/drop.png"));
-    drop.position.x = 0;
-    drop.position.y = 0;
-    viewPort.addChild(drop);
+	viewPort.addChild(mapPivot);
 
     var aim = new PIXI.Sprite(PIXI.Texture.fromImage("img/aim.png"));
     aim.visible = false;
@@ -93,6 +91,21 @@ require(['socket.io', 'pixi', 'avatars', 'input'], function(io, PIXI, avatars, i
 
 	socket.on('error', function (text) {
 		alert(text);
+	});
+
+
+
+
+	socket.on('new_c', function (chunk) {
+		map.addChunk(chunk);
+	});
+
+	socket.on('del_c', function (pos) {
+		map.deleteChunk(pos);
+	});
+
+	socket.on('map_cnf', function (conf) {
+		map.setConf(conf);
 	});
 
 
