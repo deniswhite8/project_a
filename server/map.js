@@ -23,6 +23,10 @@ function Chunk(json) {
 		allAvatars[avatarId] = avatar; 
 
 		var user = avatar.user;
+		this.addUser(user);
+	};
+
+	this.addUser = function(user) {
 		if(user && !users[user.getId()]) {
 			users[user.getId()] = user;
 			allUsers[user.getId()] = user;
@@ -67,6 +71,11 @@ function getAvatarChunkPos(avatar) {
 	return {x: avatarChunkX, y: avatarChunkY};
 }
 
+function pointOutUser(avatar) {
+	var avatarChunk = getAvatarChunkPos(avatar);
+	getChunk(avatarChunk.x, avatarChunk.y).addUser(avatar.user);
+}
+
 function registerUser(user) {
 	user.sendMapConf(conf);
 
@@ -97,9 +106,9 @@ function addAvatar(avatar) {
 }
 
 function removeAvatar(avatar) {
-	delete allAvatars[avatar.getId()];
-
 	var avatarChunk = getAvatarChunkPos(avatar);
+	getChunk(avatarChunk.x, avatarChunk.y).removeAvatar(avatar);
+
 	avatarsManager.send('del', avatar, getEmit2allFn(avatarChunk, 'all'));
 }
 
@@ -211,6 +220,8 @@ module.exports.addAvatar = addAvatar;
 module.exports.removeAvatar = removeAvatar;
 module.exports.update = update;
 module.exports.sendUpdateAvatars = sendUpdateAvatars;
+module.exports.pointOutUser = pointOutUser;
+
 
 module.exports.setAvatarsManager = function(_avatarsManager) {
 	avatarsManager = _avatarsManager;

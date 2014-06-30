@@ -138,6 +138,10 @@ function inherit(A) {
 		var pos = avatar._phBody.getPos();
 		this._phBody.setPos(cp.v(pos.x, pos.y));
 		this.rotate(avatar.angle);
+
+		this.x = pos.x;
+		this.y = pos.y;
+		this.angle = pos.angle;
 	};
 }
 

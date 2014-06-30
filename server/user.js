@@ -1,5 +1,6 @@
 var users = [],
 	sid2uidData = {},
+	map = require('./map.js'),
 	avatarsManager = require('./avatar.js');
 
 
@@ -37,6 +38,7 @@ function User(id, login, passwd, primaryAvatar, foreignAvatar) {
 		if(avatar) {
 			primaryAvatar.disable();
 			this.emit2self('ctrl', foreignAvatar.getId());
+			if(foreignAvatar.isActive()) map.pointOutUser(foreignAvatar);
 		} else {
 			this.setPrimaryAvatar(primaryAvatar);
 			primaryAvatar.enable();
@@ -78,7 +80,6 @@ function User(id, login, passwd, primaryAvatar, foreignAvatar) {
 	this.init = function() {
 		this.setForeignAvatar(foreignAvatar);
 
-		debugger;
         if(foreignAvatar) {
         	foreignAvatar.enable();
         }
