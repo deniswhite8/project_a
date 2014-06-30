@@ -34,6 +34,8 @@ require(['socket.io', 'pixi', 'avatars', 'input', 'map'], function(io, PIXI, ava
 		if (controlAvatar) {
 			viewPort.position.x = 400/2 - controlAvatar._sprite.position.x;
 			viewPort.position.y = 300/2 - controlAvatar._sprite.position.y;
+		} else {
+			controlAvatar = arrayOfAvatars[controlAvatarId];
 		}
 
 		input.setOffset(viewPort.position.x, viewPort.position.y);

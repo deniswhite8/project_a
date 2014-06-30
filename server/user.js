@@ -2,13 +2,13 @@ var users = [],
 	sid2uidData = {},
 	avatarsManager = require('./avatar.js');
 
+
 function User(id, login, passwd, primaryAvatar, foreignAvatar) {
-	var socket = null;
 
 	this.login = login;
 	this.passwd = passwd;
 
-	var selfSocket, allSocket, this4socket;
+	var selfSocket;
 
 	this.getPrimaryAvatar = function () {
 		return primaryAvatar;
@@ -18,16 +18,16 @@ function User(id, login, passwd, primaryAvatar, foreignAvatar) {
 		return foreignAvatar;
 	};
 
-	this.setPrimaryAvatar = function (avatar, _first) {
+	this.setPrimaryAvatar = function (avatar) {
 		primaryAvatar.user = null;
 		avatar.user = this;
 
 		primaryAvatar = avatar;
 
-		if(!_first) selfSocket.emit.call(this4socket, 'ctrl', primaryAvatar.getId());
+		this.emit2self('ctrl', primaryAvatar.getId());
 	};
 
-	this.setForeignAvatar = function (avatar, _first) {
+	this.setForeignAvatar = function (avatar) {
 
 		if(foreignAvatar) foreignAvatar.user = null;
 		if(avatar) avatar.user = this;
@@ -36,54 +36,60 @@ function User(id, login, passwd, primaryAvatar, foreignAvatar) {
 
 		if(avatar) {
 			primaryAvatar.disable();
-			if(!_first) selfSocket.emit.call(this4socket, 'ctrl', foreignAvatar.getId());
-			allSocket.emit.call(allSocket, 'del', primaryAvatar.getId());
+			this.emit2self('ctrl', foreignAvatar.getId());
 		} else {
+			this.setPrimaryAvatar(primaryAvatar);
 			primaryAvatar.enable();
-            avatarsManager.send('both', allSocket.emit, primaryAvatar.getId(), allSocket);
-			this.setPrimaryAvatar(primaryAvatar, _first);
 		}
 	};
 
-	this.setSocket = function (_selfSocket, _allSocket, _this4socket) {
+	this.setSocket = function (_selfSocket) {
 		selfSocket = _selfSocket;
-		allSocket = _allSocket;
-		this4socket = _this4socket;
 	};
+
+	this.getSocket = function() {
+		return selfSocket;
+	};
+
+
+
+
+	this.emit2self = function(msg, data) {
+		selfSocket.emit.call(selfSocket, msg, data);
+	};
+
+
 
 
 	this.sendNewChunk = function (obj) {
-		selfSocket.emit.call(this4socket, 'new_c', obj);
+		this.emit2self('new_c', obj);
 	};
 
 	this.sendDeleteChunk = function (obj) {
-		selfSocket.emit.call(this4socket, 'del_c', obj);
+		this.emit2self('del_c', obj);
 	};
 
 	this.sendMapConf = function (conf) {
-		selfSocket.emit.call(this4socket, 'map_cnf', conf);
+		this.emit2self('map_cnf', conf);
 	};
 
+
+
 	this.init = function() {
+		this.setForeignAvatar(foreignAvatar);
+
+		debugger;
         if(foreignAvatar) {
         	foreignAvatar.enable();
-        	avatarsManager.send('both', selfSocket.broadcast.emit, foreignAvatar.getId(), this4socket);
         }
-		this.setForeignAvatar(foreignAvatar, true);
 
-        avatarsManager.sendAll('both', selfSocket.emit, this4socket);
-
-		if(foreignAvatar) selfSocket.emit.call(this4socket, 'ctrl', foreignAvatar.getId());
-		else selfSocket.emit.call(this4socket, 'ctrl', primaryAvatar.getId());
+		if(foreignAvatar) this.emit2self('ctrl', foreignAvatar.getId());
+		else this.emit2self('ctrl', primaryAvatar.getId());
 	};
 
 	this.input = function(data) {
 		if(foreignAvatar) foreignAvatar.input(data);
 		else primaryAvatar.input(data);
-	};
-
-	this.getSocket = function () {
-		return socket;
 	};
 
 	this.getId = function() {
@@ -93,10 +99,8 @@ function User(id, login, passwd, primaryAvatar, foreignAvatar) {
 	this.disconnect = function() {
 		if (foreignAvatar) {
 			foreignAvatar.disable();
-			selfSocket.broadcast.emit.call(this4socket, 'del', foreignAvatar.getId());
 		} else {
 			primaryAvatar.disable();
-			selfSocket.broadcast.emit.call(this4socket, 'del', primaryAvatar.getId());
 		}
 	};
 }

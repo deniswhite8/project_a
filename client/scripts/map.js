@@ -1,6 +1,6 @@
 define(['graphicUtils'], function (graphicUtils) {
 
-	var conf, chunks = [],
+	var conf, chunks = {},
 		pivot = new graphicUtils.DisplayObjectContainer();
 
 	function setConf(_conf) {

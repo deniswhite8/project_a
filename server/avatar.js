@@ -1,6 +1,7 @@
 var avatars = [],
 	avatarNames = {},
 	cp = require('chipmunk'),
+	map = require('./map.js'),
 	space = new cp.Space();
 
 space.iterations = 10;
@@ -14,6 +15,7 @@ function inherit(A) {
 		this.y = args.y;
 		this.angle = args.angle;
 		this.hp = args.hp;
+		this.id = args.id;
 
 		this._radius = radius;
 	};
@@ -36,6 +38,8 @@ function inherit(A) {
 		if(this._phUseAng) space.addConstraint(this._phGear);
 
 		this.active = true;
+
+		map.addAvatar(this);
 	};
 
 	A.prototype.disable = function() {
@@ -48,6 +52,8 @@ function inherit(A) {
 		if(this._phUseAng) space.removeConstraint(this._phGear);
 
 		this.active = false;
+
+		map.removeAvatar(this);
 	};
 
 	A.prototype.isActive = function() {
@@ -95,7 +101,7 @@ function inherit(A) {
 
 		if (this.isActive()) {
 			this.active = false;
-			this.enable();
+			this.enable();			
 		}
 	};
 
@@ -139,8 +145,8 @@ function inherit(A) {
 module.exports = {
 	add: function(args) {
 		var id = avatars.length;
+		args.id = id;
 		var avatar = new avatarNames[args.name](args);
-		avatar.id = id;
 		avatars[id] = avatar;
 	},
 
@@ -151,7 +157,8 @@ module.exports = {
 	},
 
 	remove: function(id) {
-		delete avatars[id];
+		map.removeAvatar(avatars[id]);
+		if(avatar.isActive()) delete avatars[id];
 	},
 
 	enable: function(id) {
@@ -162,21 +169,23 @@ module.exports = {
 		avatars[id].disable();
 	},
 
-	send: function(type, fn, id, self) {
-		if(type == 'new') 	   fn.call(self, 'new', avatars[id].newMessage());
-		else if(type == 'upd') fn.call(self, 'upd', avatars[id].updMessage());
+	send: function(type, avatar, fn) {
+		if(type == 'new') 	   fn('new', avatar.newMessage());
+		else if(type == 'upd') fn('upd', avatar.updMessage());
 		else if(type == 'both') {
-			fn.call(self, 'new', avatars[id].newMessage());
-			fn.call(self, 'upd', avatars[id].updMessage());
+			fn('new', avatar.newMessage());
+			fn('upd', avatar.updMessage());
+		} else if(type == 'del') {
+			fn('del', avatar.getId());
 		}
 	},
 
-	sendAll: function(type, fn, self) {
-		avatars.forEach(function(e) {
-			if(e.isActive()) {
-				module.exports.send(type, fn, e.getId(), self);
+	sendMany: function(array, type, fn) {
+		for(var id in array) {
+			if(avatars[id].isActive()) {
+				module.exports.send(type, avatars[id], fn);
 			}
-		});
+		}
 	},
 
 	get: function(id) {

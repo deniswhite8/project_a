@@ -6,19 +6,22 @@ var io = require('socket.io').listen(8080),
 
 io.set('log level', 0);
 
+map.setIoSockets(io.sockets);
+map.setAvatarsManager(avatarsManager);
+map.loadMap('map');
+
 avatarsManager.addClasses('avatars');
 
 avatarsManager.addAll(db.avatars);
 usersManager.addAll(db.users);
 
-map.loadMap('map');
 
 
 
 setInterval(function() {
     avatarsManager.update(1/10);
-    avatarsManager.sendAll('upd', io.sockets.emit, io.sockets);
     map.update();
+    map.sendUpdateAvatars();
 }, 1/10);
 
 
@@ -34,7 +37,7 @@ io.sockets.on('connection', function (socket) {
             user._oldInput = {};
             usersManager.setSid(user, this.id);
 
-            user.setSocket(socket, io.sockets, this);
+            user.setSocket(socket, io.sockets);
             user.init();
 
             map.registerUser(user);
@@ -49,8 +52,6 @@ io.sockets.on('connection', function (socket) {
         if(!user) return;
 
         user.disconnect();
-
-        map.unregisterUser(user);
     });
 
     socket.on('input', function (data) {
