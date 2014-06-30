@@ -1,18 +1,23 @@
-require(['socket.io', 'pixi', 'avatars', 'input', 'map'], function(io, PIXI, avatars, input, map) {
+require(['socket.io', 'pixi', 'avatars', 'input', 'map', 'stats'], function(io, PIXI, avatars, input, map, Stats) {
 
 	var arrayOfAvatars = {},
 		socket = io.connect('http://localhost:8080'),
 		frameCounter = 0,
 		stage = new PIXI.Stage(0x000000),
-		renderer = PIXI.autoDetectRenderer(400, 300),
+		renderer = PIXI.autoDetectRenderer(640, 480),
 		controlAvatar = null,
 		viewPort = new PIXI.DisplayObjectContainer(),
 		controlAvatarId,
-		mapPivot = map.pivot;
+		mapPivot = map.pivot,
+		stats = new Stats(),
+		centerDiv = document.getElementById('centerDiv');
+
+	stats.setMode(2);
+	centerDiv.appendChild(stats.domElement);
 
 
 	stage.addChild(viewPort);
-	document.body.appendChild(renderer.view);
+	centerDiv.appendChild(renderer.view);
 	input.init(renderer.view, arrayOfAvatars);
 	requestAnimFrame(animate);
 
@@ -25,6 +30,8 @@ require(['socket.io', 'pixi', 'avatars', 'input', 'map'], function(io, PIXI, ava
     viewPort.addChild(aim);
 
 	function animate() {
+		stats.begin();
+
 		frameCounter++;
 		if(frameCounter % 12) {
 			var inputData = input.getInputData();
@@ -32,8 +39,8 @@ require(['socket.io', 'pixi', 'avatars', 'input', 'map'], function(io, PIXI, ava
 		}
 
 		if (controlAvatar) {
-			viewPort.position.x = 400/2 - controlAvatar._sprite.position.x;
-			viewPort.position.y = 300/2 - controlAvatar._sprite.position.y;
+			viewPort.position.x = 640/2 - controlAvatar._sprite.position.x;
+			viewPort.position.y = 480/2 - controlAvatar._sprite.position.y;
 		} else {
 			controlAvatar = arrayOfAvatars[controlAvatarId];
 		}
@@ -55,6 +62,8 @@ require(['socket.io', 'pixi', 'avatars', 'input', 'map'], function(io, PIXI, ava
 
 	    requestAnimFrame(animate);
 	    renderer.render(stage);
+
+	    stats.end();
 	}
 
 
