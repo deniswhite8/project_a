@@ -31,7 +31,7 @@ function man(args) {
         else this.stop();
 
         var inAvatar = input.inOut;
-        if (inAvatar !== null && inAvatar !== undefined && inAvatar.name == 'panzer' && this.reach(inAvatar) && inAvatar.user == null) {
+        if (inAvatar !== null && inAvatar !== undefined && (inAvatar.name == 'panzer' || inAvatar.name == 'car') && this.reach(inAvatar) && inAvatar.user == null) {
         	this.user.setForeignAvatar(inAvatar);
         }
 	};

@@ -71,8 +71,6 @@ function inherit(A) {
 		};
 	};
 
-	
-
 	A.prototype.phInit = function(mass, width, height, useAngle) {
 		this._phBody = new cp.Body(mass, cp.momentForBox(mass, width, height))
 		this._phBody.setPos(cp.v(this.x, this.y));
