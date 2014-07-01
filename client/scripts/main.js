@@ -123,7 +123,7 @@ require(['socket.io', 'pixi', 'avatars', 'input', 'map', 'stats'], function(io, 
 
 
 	socket.emit('login', {
-		login: prompt('login'),
-		passwd: prompt('passwd')
+		login: 'denis',//prompt('login'),
+		passwd: 'qwe'//prompt('passwd')
 	});
 });

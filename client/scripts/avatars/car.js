@@ -5,7 +5,8 @@ define(['graphicUtils'], function (utils) {
 	return function car() {
 		var turret = load('car_turret.png'),
 			body   = load('car.png'),
-			hpLine = load('car_hp.png');
+			hpLine = load('car_hp_line.png');
+			hpBorder = load('car_hp_border.png');
 
 		this.radius = 15;
 
@@ -14,11 +15,16 @@ define(['graphicUtils'], function (utils) {
 			turret.anchor.y = 0.46;
 			body.anchor.x = 0.5;
 			body.anchor.y = 0.5;
-			hpLine.anchor.x = 0.5;
-			hpLine.anchor.y = 0.5;
+			
+			hpLine.anchor.y = 1;
+			hpLine.position.x = 1;
+			hpLine.position.y = 13;
+			hpBorder.position.x = -4;
+			hpBorder.position.y = -20;
 
 
-			body.addChild(hpLine);
+			body.addChild(hpBorder);
+			hpBorder.addChild(hpLine);
 			body.addChild(turret);
 
 			return body;
@@ -30,6 +36,7 @@ define(['graphicUtils'], function (utils) {
 			body.rotation = params.bodyAngle;
 			turret.rotation = params.turretAngle - params.bodyAngle;
 
+			hpLine.scale.y = params.hp;
 			hpLine.tint = ((0xFF * params.hp) << 8) + ((0xFF * (1-params.hp)) << 16);
 		};
 	};
