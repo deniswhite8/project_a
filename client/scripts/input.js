@@ -6,7 +6,8 @@ define(function () {
 		arrayOfAvatars,
 		oldInput = {},
 		dx, dy,
-		selectId;
+		selectId,
+		selfId;
 
 	function keyIsPressed(keyCode) {
 		if (typeof keyCode == 'string')
@@ -26,6 +27,10 @@ define(function () {
 		setOffset: function(_dx, _dy) {
 			dx = _dx;
 			dy = _dy;
+		},
+
+		setSelfId: function(id) {
+			selfId = id;
 		},
 
 		getSelectId: function() {
@@ -56,7 +61,7 @@ define(function () {
 			    selectId = null;
 			   	for (var i in arrayOfAvatars) {
 			   		var e = arrayOfAvatars[i];
-			    	if (Math.pow(e._sprite.position.x - mouseX + dx, 2) + Math.pow(e._sprite.position.y - mouseY + dy, 2) < e.radius*e.radius) {
+			    	if (i != selfId && Math.pow(e._sprite.position.x - mouseX + dx, 2) + Math.pow(e._sprite.position.y - mouseY + dy, 2) < e.radius*e.radius) {
 			    		selectId = i;
 			    		break;
 			    	}

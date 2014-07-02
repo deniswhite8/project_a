@@ -34,6 +34,11 @@ function man(args) {
         if (inAvatar !== null && inAvatar !== undefined && (inAvatar.name == 'panzer' || inAvatar.name == 'car') && this.reach(inAvatar) && inAvatar.user == null) {
         	this.user.setForeignAvatar(inAvatar);
         }
+
+        if(inAvatar !== null && inAvatar !== undefined && inAvatar.name == 'passage' && this.reach(inAvatar)) {
+        	var primaryAvatar = this.user.getPrimaryAvatar();
+        	primaryAvatar.copyPositionById(inAvatar.pair);
+        }
 	};
 
 	this.update = function() {

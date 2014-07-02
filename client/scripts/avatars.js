@@ -1,4 +1,4 @@
-define(['avatars/man', 'avatars/panzer', 'avatars/car'], function () {
+define(['avatars/man', 'avatars/panzer', 'avatars/car', 'avatars/passage'], function () {
 	var avatars = {};
 
 	for (var i = 0; i < arguments.length; i++)

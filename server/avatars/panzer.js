@@ -35,7 +35,7 @@ function panzer(args) {
         var inAvatar = input.inOut;
         if (inAvatar === null) {
         	var primaryAvatar = this.user.getPrimaryAvatar();
-        	primaryAvatar.copyTransform(this);
+        	primaryAvatar.copyPosition(this);
         	this.user.setForeignAvatar(null);
         	this.stop();
         }

@@ -47,7 +47,7 @@ require(['socket.io', 'pixi', 'avatars', 'input', 'map', 'stats'], function(io, 
 
 		input.setOffset(viewPort.position.x, viewPort.position.y);
 		var selectId = input.getSelectId();
-		if(selectId && selectId != controlAvatarId) {
+		if(selectId) {
 			var selectAvatar = arrayOfAvatars[selectId];
 			aim.visible = true;
 			aim.scale.x = aim.scale.y = selectAvatar.radius / 10;
@@ -72,7 +72,7 @@ require(['socket.io', 'pixi', 'avatars', 'input', 'map', 'stats'], function(io, 
 		if (arrayOfAvatars[data.id]) return;
 
 		var avatar = new avatars[data.name](),
-			sprite = avatar.init();
+			sprite = avatar.init(data.params);
 
 		viewPort.addChild(sprite);
 		avatar._sprite = sprite;
@@ -98,6 +98,8 @@ require(['socket.io', 'pixi', 'avatars', 'input', 'map', 'stats'], function(io, 
 	socket.on('ctrl', function (id) {
 		controlAvatarId = id;
 		controlAvatar = arrayOfAvatars[id];
+		input.setSelfId(id);
+		input.clearSelectId();
 	});
 
 	socket.on('error', function (text) {

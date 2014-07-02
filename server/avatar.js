@@ -9,13 +9,9 @@ space.iterations = 10;
 function inherit(A) {
 
 	A.prototype.init = function(args, radius) {
-		this.name = args.name;
-		this.active = args.active;
-		this.x = args.x;
-		this.y = args.y;
-		this.angle = args.angle;
-		this.hp = args.hp;
-		this.id = args.id;
+		for(var i in args) {
+			this[i] = args[i];
+		}
 
 		this._radius = radius;
 	};
@@ -31,11 +27,13 @@ function inherit(A) {
 	A.prototype.enable = function() {
 		if (this.active) return;
 
-		space.addBody(this._phBody);
-		space.addBody(this._phControlBody);
-		space.addShape(this._phShape);
-		space.addConstraint(this._phPivot);
-		if(this._phUseAng) space.addConstraint(this._phGear);
+		if (this._phUse) {
+			space.addBody(this._phBody);
+			space.addBody(this._phControlBody);
+			space.addShape(this._phShape);
+			space.addConstraint(this._phPivot);
+			if(this._phUseAng) space.addConstraint(this._phGear);
+		}
 
 		this.active = true;
 
@@ -45,11 +43,13 @@ function inherit(A) {
 	A.prototype.disable = function() {
 		if (!this.active) return;
 
-		space.removeBody(this._phBody);
-		space.removeBody(this._phControlBody);
-		space.removeShape(this._phShape);
-		space.removeConstraint(this._phPivot);
-		if(this._phUseAng) space.removeConstraint(this._phGear);
+		if (this._phUse) {
+			space.removeBody(this._phBody);
+			space.removeBody(this._phControlBody);
+			space.removeShape(this._phShape);
+			space.removeConstraint(this._phPivot);
+			if(this._phUseAng) space.removeConstraint(this._phGear);
+		}
 
 		this.active = false;
 
@@ -72,34 +72,38 @@ function inherit(A) {
 	};
 
 	A.prototype.phInit = function(mass, width, height, useAngle) {
-		this._phBody = new cp.Body(mass, cp.momentForBox(mass, width, height))
-		this._phBody.setPos(cp.v(this.x, this.y));
-		if(useAngle) this._phBody.setAngle(this.angle);
+		if(mass == false) this._phUse = false;
+		else {
+			this._phUse = true;
+			this._phBody = new cp.Body(mass, cp.momentForBox(mass, width, height))
+			this._phBody.setPos(cp.v(this.x, this.y));
+			if(useAngle) this._phBody.setAngle(this.angle);
 
-		this._phShape = new cp.BoxShape(this._phBody, width, height)
+			this._phShape = new cp.BoxShape(this._phBody, width, height)
 
-		this._phControlBody = new cp.Body(Infinity, Infinity);
+			this._phControlBody = new cp.Body(Infinity, Infinity);
 
-	    this._phPivot = new cp.PivotJoint(this._phControlBody, this._phBody, cp.vzero, cp.vzero);
-	    this._phPivot.maxBias = 200;
-	    this._phPivot.maxForce = mass*30;
-	    
-	    this._phGear = null;
-	    if (useAngle) {
-	    	this._phGear = new cp.GearJoint(this._phControlBody, this._phBody, 0, 1);
-			this._phGear.errorBias = 0;
-			this._phGear.maxBias = 1.2;
-			this._phGear.maxForce = 50000;
+		    this._phPivot = new cp.PivotJoint(this._phControlBody, this._phBody, cp.vzero, cp.vzero);
+		    this._phPivot.maxBias = 200;
+		    this._phPivot.maxForce = mass*30;
+		    
+		    this._phGear = null;
+		    if (useAngle) {
+		    	this._phGear = new cp.GearJoint(this._phControlBody, this._phBody, 0, 1);
+				this._phGear.errorBias = 0;
+				this._phGear.maxBias = 1.2;
+				this._phGear.maxForce = 50000;
+			}
+
+			this._phDir = cp.vzero;
+			this._phAng = 0;
+			this._phUseAng = useAngle;
+			this._phOldVel = cp.vzero;
 		}
-
-		this._phDir = cp.vzero;
-		this._phAng = 0;
-		this._phUseAng = useAngle;
-		this._phOldVel = cp.vzero;
 
 		if (this.isActive()) {
 			this.active = false;
-			this.enable();			
+			this.enable();
 		}
 	};
 
@@ -132,14 +136,19 @@ function inherit(A) {
 		if( this._phUseAng) this.angle = this._phAng;
 	};
 
-	A.prototype.copyTransform = function(avatar) {
-		var pos = avatar._phBody.getPos();
-		this._phBody.setPos(cp.v(pos.x, pos.y));
-		this.rotate(avatar.angle);
+	A.prototype.copyPosition = function(avatar) {
+		var pos = {x: avatar.x, y: avatar.y};
+
+		if(this._phUse) {
+			this._phBody.setPos(cp.v(pos.x, pos.y));
+		}
 
 		this.x = pos.x;
 		this.y = pos.y;
-		this.angle = pos.angle;
+	};
+
+	A.prototype.copyPositionById = function(avatarId) {
+		this.copyPosition(avatars[avatarId]);
 	};
 }
 
@@ -172,6 +181,11 @@ module.exports = {
 	},
 
 	send: function(type, avatar, fn) {
+		if(!avatar.updMessage) {
+			if(type == 'both') type = 'new';
+			else if(type == 'upd') return;
+		}
+
 		if(type == 'new') 	   fn('new', avatar.newMessage());
 		else if(type == 'upd') fn('upd', avatar.updMessage());
 		else if(type == 'both') {
@@ -197,7 +211,7 @@ module.exports = {
 	update: function(dt) {
 		space.step(dt);
 		avatars.forEach(function(e) {
-			if(e.isActive()) e.update();
+			if(e.isActive() && e.update) e.update();
 		});
 	},
 
