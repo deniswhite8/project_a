@@ -18,6 +18,9 @@ define(['graphicUtils'], function (utils) {
 
 			pivot.addChild(hpCirlce);
 			pivot.addChild(body);
+
+			pivot._z = 10;
+			
 			return pivot;
 		};
 

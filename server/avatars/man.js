@@ -36,8 +36,9 @@ function man(args) {
         }
 
         if(inAvatar !== null && inAvatar !== undefined && inAvatar.name == 'passage' && this.reach(inAvatar)) {
-        	var primaryAvatar = this.user.getPrimaryAvatar();
-        	primaryAvatar.copyPositionById(inAvatar.pair);
+        	this.disable();
+        	this.copyPositionById(inAvatar.pair);
+        	this.enable();
         }
 	};
 

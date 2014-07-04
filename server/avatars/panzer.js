@@ -39,6 +39,12 @@ function panzer(args) {
         	this.user.setForeignAvatar(null);
         	this.stop();
         }
+
+        if(inAvatar !== null && inAvatar !== undefined && inAvatar.name == 'passage' && inAvatar.size == 'big' && this.reach(inAvatar)) {
+        	this.disable();
+        	this.copyPositionById(inAvatar.pair);
+        	this.enable();
+        }
 	};
 
 	this.update = function() {

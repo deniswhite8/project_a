@@ -38,9 +38,15 @@ function car(args) {
         var inAvatar = input.inOut;
         if (inAvatar === null) {
         	var primaryAvatar = this.user.getPrimaryAvatar();
-        	primaryAvatar.copyTransform(this);
+        	primaryAvatar.copyPosition(this);
         	this.user.setForeignAvatar(null);
         	this.stop();
+        }
+
+        if(inAvatar !== null && inAvatar !== undefined && inAvatar.name == 'passage' && inAvatar.size == 'big' && this.reach(inAvatar)) {
+        	this.disable();
+        	this.copyPositionById(inAvatar.pair);
+        	this.enable();
         }
 	};
 

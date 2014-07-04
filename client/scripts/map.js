@@ -3,6 +3,8 @@ define(['graphicUtils'], function (graphicUtils) {
 	var conf, chunks = {},
 		pivot = new graphicUtils.DisplayObjectContainer();
 
+	pivot._z = 0;
+
 	function setConf(_conf) {
 		conf = _conf;
 	}

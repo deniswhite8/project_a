@@ -27,6 +27,8 @@ define(['graphicUtils'], function (utils) {
 			hpBorder.addChild(hpLine);
 			body.addChild(turret);
 
+			body._z = 10;
+
 			return body;
 		};
 

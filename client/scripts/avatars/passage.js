@@ -6,13 +6,13 @@ define(['graphicUtils'], function (utils) {
 		var right = load('one_level.png'),
 			upLevel = load('change_level.png');
 
-		this.radius = 25;
+		this.radius = 0;
 
 		this.init = function(params) {
 			var dir = params.dir,
 				obj;
 
-			if(dir == 'rigth' || dir == 'left' || dir == 'up' || dir == 'down') {
+			if(dir == 'right' || dir == 'left' || dir == 'up' || dir == 'down') {
 				var angles = {
 					'right': 0,
 					'left': Math.PI,
@@ -38,6 +38,16 @@ define(['graphicUtils'], function (utils) {
 			obj.anchor.y = 0.5;
 			obj.position.x = params.x;
 			obj.position.y = params.y;
+
+			if(params.size == 'small') {
+				this.radius = 25/2;
+				obj.scale.x = 0.5;
+				obj.scale.y = 0.5;
+			} else if(params.size == 'big') {
+				this.radius = 25;
+			}
+
+			obj._z = 5
 
 			return obj;
 		};

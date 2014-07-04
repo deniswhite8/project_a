@@ -50,6 +50,8 @@ require(['socket.io', 'pixi', 'avatars', 'input', 'map', 'stats'], function(io, 
 		if(selectId) {
 			var selectAvatar = arrayOfAvatars[selectId];
 			aim.visible = true;
+			aim._z = selectAvatar._sprite._z + 1;
+			sortZ();
 			aim.scale.x = aim.scale.y = selectAvatar.radius / 10;
 
 			aim.position.x = arrayOfAvatars[selectId]._sprite.x;
@@ -67,6 +69,12 @@ require(['socket.io', 'pixi', 'avatars', 'input', 'map', 'stats'], function(io, 
 	}
 
 
+	function sortZ() {
+		viewPort.children.sort(function (a, b) {
+			return a._z - b._z;
+		});
+	}
+
 
 	socket.on('new', function (data) {
 		if (arrayOfAvatars[data.id]) return;
@@ -79,8 +87,9 @@ require(['socket.io', 'pixi', 'avatars', 'input', 'map', 'stats'], function(io, 
 
 		arrayOfAvatars[data.id] = avatar;
 
-		viewPort.removeChild(aim);
-		viewPort.addChild(aim);
+		sortZ();
+
+		if(controlAvatarId == data.id) controlAvatar = arrayOfAvatars[data.id];
 	});
 
 	socket.on('upd', function (data) {
@@ -89,6 +98,7 @@ require(['socket.io', 'pixi', 'avatars', 'input', 'map', 'stats'], function(io, 
 	});
 
 	socket.on('del', function (id) {
+		if(!arrayOfAvatars[id]) return;
 		var sprite = arrayOfAvatars[id]._sprite;
 		viewPort.removeChild(sprite);
 		delete arrayOfAvatars[id];

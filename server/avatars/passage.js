@@ -10,6 +10,7 @@ function passage(args) {
 			name: this.name,
 			params: {
 				dir: this.dir,
+				size: this.size,
 				x: this.x,
 				y: this.y
 			}
