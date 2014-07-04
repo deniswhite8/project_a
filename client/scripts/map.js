@@ -17,7 +17,10 @@ define(['graphicUtils'], function (graphicUtils) {
 
 		for (var dy = 0; dy < conf.CHUNK_SIZE; dy++)
 		for (var dx = 0; dx < conf.CHUNK_SIZE; dx++) {
-			var sprite = graphicUtils.load('tiles/' + chunk.data[dx + dy*conf.CHUNK_SIZE] + '.png');
+			var chunkTypeId = chunk.data[dx + dy*conf.CHUNK_SIZE];
+			if(!chunkTypeId) continue;
+
+			var sprite = graphicUtils.load('tiles/' + chunkTypeId + '.png');
 			sprite.position.x = dx * conf.TILE_SIZE + chunk.x * conf.TILE_SIZE * conf.CHUNK_SIZE - 6;
 			sprite.position.y = dy * conf.TILE_SIZE + chunk.y * conf.TILE_SIZE * conf.CHUNK_SIZE - 6;
 			pivot.addChild(sprite);
