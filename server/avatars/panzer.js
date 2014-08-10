@@ -13,7 +13,7 @@ function panzer(args) {
 			params: {
 				x: this.x,
 				y: this.y,
-				bodyAngle: this.angle,
+				angle: this.angle,
 				turretAngle: turretAngle,
 				hp: this.hp
 			}

@@ -35,8 +35,8 @@ define(['graphicUtils'], function (utils) {
 		this.update = function(params) {
 			body.position.x = params.x;
 			body.position.y = params.y;
-			body.rotation = params.bodyAngle;
-			turret.rotation = params.turretAngle - params.bodyAngle;
+			body.rotation = params.angle;
+			turret.rotation = params.turretAngle - params.angle;
 
 			hpLine.scale.y = params.hp;
 			hpLine.tint = ((0xFF * params.hp) << 8) + ((0xFF * (1-params.hp)) << 16);

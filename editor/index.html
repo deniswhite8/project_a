@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Project A map editor</title>
+	<style>
+		.tools {
+			background: #e5e5e5;
+			height: 100px;
+		}
+
+		.tools-line {
+			border-left: 3px solid #dd4b39;
+			display: inline-block;
+			vertical-align: top;
+			padding: 5px;
+			height: 40px;
+		}
+
+		.tools-line p {
+			display: inline;
+			vertical-align: top;
+		}
+
+		.tools-line button {
+			padding: 0;
+		}
+
+		.tools-line button img {
+			width: 30px;
+		}
+
+		.tools-line .erase {
+			vertical-align: top;
+			height: 37px;
+			margin-top: 2px;
+		}
+
+		.tools-line .select {
+			border-bottom: 3px solid #dd4b39;
+		}
+		
+		.tools-line label {
+			border: 1px solid black;
+			padding: 5px;
+		}
+
+		.tools-line input[type='text'] {
+			width: 50px;
+		}
+
+		.map {
+			margin-left: auto;
+			margin-right: auto;
+			margin-top: 30px;
+			display: block;
+			width: 640px;
+			height: 480px;
+		}
+	</style>
+</head>
+<body>
+	<div class="tools">
+		<div class="tools-line">
+			<input type="text" id="mapName">
+			<button id="open">Open</button>
+			<button id="save">Save</button>
+		</div>
+		<div class="tools-line" id="avatars">
+			<p>Avatars:</p>
+		</div>
+		<div class="tools-line" id="tiles">
+			<p>Tiles:</p>
+		</div>
+		<div class="tools-line">
+			<button id="select">Select</button>
+		</div>
+		<div class="tools-line">
+			<div id="avatarPanel">
+			</div>
+		</div>
+	</div>
+	<div class="map" id="map">
+		
+	</div>
+
+	<script language="javascript">
+		var avatarList, tileList, clientPath, avatarFuncs, avatarConf;
+
+		function getList() {
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', 'http://localhost:8888/init', false);
+			xhr.send(null);
+			var data = JSON.parse(xhr.responseText);
+			avatarList = data.avatars;
+			tileList = data.tiles;
+			clientPath = data.clientPath;
+			avatarFuncs = data.avatarFuncs;
+			avatarConf = data.avatarConf;
+		}
+		getList();
+
+		document.write('<script src=\'' + clientPath + 'scripts/pixi.js\'><\/script>');
+	</script>
+
+	<script src="main.js"></script>
+</body>
+</html>

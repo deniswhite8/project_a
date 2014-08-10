@@ -27,7 +27,7 @@ define(['graphicUtils'], function (utils) {
 		this.update = function(params) {
 			pivot.position.x = params.x;
 			pivot.position.y = params.y;
-			pivot.rotation = params.bodyAngle;
+			pivot.rotation = params.angle;
 
 			hpCirlce.tint = ((0xFF * params.hp) << 8) + ((0xFF * (1-params.hp)) << 16);
 		};

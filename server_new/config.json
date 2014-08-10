@@ -1,0 +1,28 @@
+{
+	"chunk": {
+		"size": 32,
+		"tile": {
+			"size": 32
+		},
+		"groupRadius": 2
+	},
+	"table": {
+		"user": "tables/user.json",
+		"avatar": "tables/avatar.json"
+	},
+	"network": {
+		"port": 8080
+	},
+	"avatar": {
+		"path": "avatars/"
+	},
+	"physics": {
+		"iterations": 10
+	},
+	"message": {
+		"newChunkTiles": "new_tl",
+		"removeChunkTiles": "del_tl",
+		"newAvatar": "new_av",
+		"removeAvatar": "del_av"
+	}
+}
