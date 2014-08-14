@@ -42,7 +42,7 @@ Avatar.prototype.removeMessage = function() {
 	return {id: this.id};
 };
 
-Avatar.prototype._calcChunkIndexByPosition = function() {
+Avatar.prototype.calcChunkIndexByPosition = function() {
 	x = Math.floor(this.x / config.chunk.tile.size / config.chunk.size);
 	y = Math.floor(this.y / config.chunk.tile.size / config.chunk.size);
 
@@ -51,8 +51,19 @@ Avatar.prototype._calcChunkIndexByPosition = function() {
 };
 
 Avatar.prototype._update = function() {
-	if (this.physicsBody) this.physicsBody.update();
+	if (this.physicsBody) {
+		this.physicsBody.update();
+
+		var params = this.physicsBody.getParams();
+		this.x = params.x;
+		this.y = params.y;
+		this.angle = params.angle;
+	}
 	if (this.update) this.update();
+
+	if (this.calcChunkIndexByPosition() != this.chunk.index) {
+		return true;
+	}
 };
 
 Avatar.prototype._input = function(input) {
@@ -62,5 +73,14 @@ Avatar.prototype._input = function(input) {
 
 	if (this.input) this.input(this._oldInput);
 };
+
+Avatar.prototype.disable = function() {
+	physics.removeBody(this.physicsBody);
+};
+
+Avatar.prototype.enable = function() {
+	physics.addBody(this.physicsBody);
+};
+
 
 module.exports = Avatar;

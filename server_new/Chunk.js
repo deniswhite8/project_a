@@ -5,14 +5,17 @@ var Chunk = function(x, y, chunks) {
 
 	this.x = x;
 	this.y = y;
+
+	this.index = x + y * config.chunk.size;
 };
 
 Chunk.prototype.addAvatar = function(avatar) {
 	if (!avatar || !avatar.id) return;
 
 	this._avatars[avatar.id] = avatar;
+	avatar.enable();
 
-	this.groupForeach(function(chunk) {
+	this.vicinityForeach(function(chunk) {
 		chunk.broadcast(config.avatar.newAvatar, avatar.newMessage(), avatar);
 		chunk.sendData(avatar, 'new');
 	});
@@ -22,11 +25,36 @@ Chunk.prototype.removeAvatar = function(avatar) {
 	if (!avatar || !avatar.id) return;
 
 	delete this._avatars[avatar.id];
+	avatar.disable();
 
-	this.groupForeach(function(chunk) {
+	this.vicinityForeach(function(chunk) {
 		chunk.broadcast(config.avatar.removeAvatar, avatar.removeMessage(), avatar);
 		chunk.sendData(avatar, 'remove');
 	});
+};
+
+Chunk.transferAvatar = function(avatar) {
+	if (!avatar || !avatar.id) return;
+
+	var oldChunk = avatar.chunk,
+		newChunk = chunks[avatar.calcChunkIndexByPosition()];
+
+	if (oldChunk == newChunk) return;
+
+	avatar.chunk = newChunk;
+	delete oldChunk._avatars[avatar.id];
+	newChunk._avatars[avatar.id] = avatar;
+
+	Chunk.symmetricDifferenceVicinityForeach(oldChunk, newChunk,
+		function (chunk) {
+			chunk.broadcast(config.avatar.removeAvatar, avatar.removeMessage(), avatar);
+			chunk.sendData(avatar, 'remove');
+		},
+		function (chunk) {
+			chunk.broadcast(config.avatar.newAvatar, avatar.newMessage(), avatar);
+			chunk.sendData(avatar, 'new');
+		}
+	);
 };
 
 Chunk.prototype.broadcast = function(name, data, exceptAvatar) {
@@ -40,20 +68,35 @@ Chunk.prototype.broadcast = function(name, data, exceptAvatar) {
 };
 
 Chunk.prototype.sendData = function(recipientAvatar, type) {
-	if (type == 'new') type = true;
-	else if (type == 'remove') type = false;
-	else return;
-
-	if (type) recipientAvatar.user.send(config.message.newChunkTiles, this._tiles);
-	else recipientAvatar.user.send(config.message.removeChunkTiles, this.x + this.y * config.chunk.size);
-
-	this._avatars.forEach(function(avatar) {
-		if (type) recipientAvatar.user.send(config.message.newAvatar, avatar.newMessage());
-		else recipientAvatar.user.send(config.message.removeAvatar, avatar.removeMessage());
-	});
+	if (type == 'new') recipientAvatar.user.send(config.message.newChunkTiles, this._tiles);
+	else if (type == 'remove') recipientAvatar.user.send(config.message.removeChunkTiles, this.index);
 };
 
-Chunk.prototype.groupForeach = function(callback) {
+Chunk.symmetricDifferenceVicinityForeach = function(first, second, callbackForFirst, callbackForSecond) {
+	var forFirst = [], forSecond = [];
+
+	first.vicinityForeach(function (chunk) {
+		forFirst.push(chunk);
+	});
+
+	second.vicinityForeach(function (chunk) {
+		forSecond.push(chunk);
+	});
+
+	for (var i = 0; i < forFirst.length; i++) {
+		for (var j = 0; j < forSecond.length; j++) {
+			if (forFirst[i] == forSecond[j]) {
+				delete forFirst[i];
+				delete forSecond[j];
+			}
+		}
+	}
+
+	forFirst.forEach(callbackForFirst);
+	forSecond.forEach(callbackForSecond);
+};
+
+Chunk.prototype.vicinityForeach = function(callback) {
 	var groupRadius = config.chunk.groupRadius - 1;
 
 	for(var x = this.x - groupRadius; x < this.x + groupRadius; x++)
@@ -62,6 +105,14 @@ Chunk.prototype.groupForeach = function(callback) {
 			if (!this._chunks[index]) continue;
 			callback(this._chunks[index]);
 		}
+};
+
+Chunk.prototype._update = function(callback) {
+	this._avatars.forEach(function (avatar) {
+		if (avatar._update()) {
+			Chunk.transferAvatar(avatar);
+		}
+	});
 };
 
 module.exports = Chunk;

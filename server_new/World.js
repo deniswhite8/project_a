@@ -7,7 +7,6 @@ var World = function() {
 	global.config = config;
 
 	this._chunks = [];
-	this._avatars = [];
 
 	this._physics = new Physics();
 	this._network = new Network();
@@ -16,23 +15,17 @@ var World = function() {
 World.prototype.start = function() {
 	this._physics.init();
 	this._network.listen();
+
+	setInterval(this._update, config.physics.iterations);
 };
 
 World.prototype.addAvatar = function(avatar) {
-	if (this._avatars[avatar.id]) return;
-
-	this._avatars[avatar.id] = avatar;
-
 	var chunk = this._chunks[avatar._calcChunkIndexByPosition()];
 	if (chunk)
 		chunk.addAvatar(avatar);
 };
 
 World.prototype.removeAvatar = function(avatar) {
-	if (this._avatars[avatar.id]) return;
-
-	delete this._avatars[avatar.id];
-
 	var chunk = this._chunks[avatar._calcChunkIndexByPosition()];
 	if (chunk)
 		chunk.removeAvatar(avatar);
@@ -50,6 +43,12 @@ World.prototype.createAvatar = function(id) {
 		avatar = new avatarClass(row.params, this._physics);
 
 	return avatar;
+};
+
+World.prototype._update = function() {
+	this._chunks.forEach(function (chunk) {
+		chunk._update();
+	});
 };
 
 module.exports = World;
