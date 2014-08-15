@@ -23,6 +23,11 @@
 		"newChunkTiles": "new_tl",
 		"removeChunkTiles": "del_tl",
 		"newAvatar": "new_av",
-		"removeAvatar": "del_av"
+		"removeAvatar": "del_av",
+		"setControlAvatar": "ctrl_av",
+
+		"userLogin": "login",
+		"userInput": "input",
+		"userDisconect": "disconnect"
 	}
 }

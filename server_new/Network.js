@@ -5,7 +5,7 @@ var Network = function() {
     this._eventCallbacks = [];
 };
 
-Network.prototype.listen = function(name, callback) {
+Network.prototype.listen = function() {
     io.listen(config.network.port);
 
     io.sockets.on('connection', function (socket) {

@@ -10,7 +10,7 @@ var Chunk = function(x, y, chunks) {
 };
 
 Chunk.prototype.addAvatar = function(avatar) {
-	if (!avatar || !avatar.id) return;
+	if (!avatar || !avatar.id || this._avatars[avatar.id]) return;
 
 	this._avatars[avatar.id] = avatar;
 	avatar.enable();
@@ -22,7 +22,7 @@ Chunk.prototype.addAvatar = function(avatar) {
 };
 
 Chunk.prototype.removeAvatar = function(avatar) {
-	if (!avatar || !avatar.id) return;
+	if (!avatar || !avatar.id || !this._avatars[avatar.id]) return;
 
 	delete this._avatars[avatar.id];
 	avatar.disable();

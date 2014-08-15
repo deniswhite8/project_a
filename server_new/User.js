@@ -26,8 +26,12 @@ User.prototype.setSocket = function(socket) {
 };
 
 User.prototype.send = function(name, data) {
-	if (!this._socket || !name || !data) return;
-	this._socket.send(name, data);
+	if (!this._socket || !name || !data || !Object.keys(data).length) return;
+	this._socket.emit(name, data);
+};
+
+User.prototype.getAvatarId = function() {
+	return this._foreignAvatar;
 };
 
 module.exports = User;

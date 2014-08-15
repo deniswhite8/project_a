@@ -1,21 +1,5 @@
-var Avatar = function(params, physics) {
-	for (var i in params) {
-		this[i] = params[i];
-	}
-
-	var type = this.type = arguments.callee.caller.name;
-	this._avatarConfig = require(config.avatar.path + type + '/config.json');
-	physicsConfig = avatarConfig.physics;
-
-	if (physicsConfig) {
-		physicsConfig.x = this.x;
-		physicsConfig.y = this.y;
-		physicsConfig.angle = this.angle;
-
-		this.physicsBody = physics.createBody(physicsConfig);
-	}
-
-	this._input = {};
+var Avatar = function() {
+	this._cached = new Cached();
 	this.user = null;
 };
 
@@ -27,7 +11,7 @@ Avatar.prototype._prepareMessage = function(messageType) {
 		response[name] = this[name];
 	});
 
-	return response;
+	return this._cached.clean(response, messageType);
 };
 
 Avatar.prototype.newMessage = function() {
@@ -42,12 +26,37 @@ Avatar.prototype.removeMessage = function() {
 	return {id: this.id};
 };
 
+Avatar.prototype.save = function() {
+	if (!this.id) return;
+
+	var table = Table.use(config.table.avatar);
+};
+
 Avatar.prototype.calcChunkIndexByPosition = function() {
 	x = Math.floor(this.x / config.chunk.tile.size / config.chunk.size);
 	y = Math.floor(this.y / config.chunk.tile.size / config.chunk.size);
 
 	var index = x + y * config.chunk.size;
 	return index;
+};
+
+Avatar.prototype._init = function(params, physics) {
+	for (var i in params) {
+		this[i] = params[i];
+	}
+
+	this._avatarConfig = require(config.avatar.path + this.type + '/config.json');
+	physicsConfig = avatarConfig.physics;
+
+	if (physicsConfig) {
+		physicsConfig.x = this.x;
+		physicsConfig.y = this.y;
+		physicsConfig.angle = this.angle;
+
+		this.physicsBody = physics.createBody(physicsConfig);
+	}
+
+	if (this.init) this.init();
 };
 
 Avatar.prototype._update = function() {
@@ -67,11 +76,8 @@ Avatar.prototype._update = function() {
 };
 
 Avatar.prototype._input = function(input) {
-	for (var i in input) {
-		this._input[i] = input[i];
-	}
-
-	if (this.input) this.input(this._oldInput);
+	var inputData = this._cached.clean(input, 'input');
+	if (inputData && this.input) this.input(inputData);
 };
 
 Avatar.prototype.disable = function() {
