@@ -1,4 +1,4 @@
-var World = require('World.js');
+var World = require('scripts/World.js');
 
 var world = new World();
 world.start();
