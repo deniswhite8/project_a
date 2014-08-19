@@ -5,6 +5,6 @@
 		"height": 100,
 		"isRotated": true
 	},
-	"newMessage": ["type", "x", "y", "angle", "turretAngle", "health"],
-	"updMessage": ["x", "y", "angle", "turretAngle", "health"]
+	"newMessage": ["id", "type", "x", "y", "angle", "turretAngle", "health"],
+	"updMessage": ["id", "x", "y", "angle", "turretAngle", "health"]
 }
