@@ -8,5 +8,10 @@
     "avatar": {
         "types": ["Man", "Panzer", "Car", "Passage"],
 		"path": "avatars/"
+	},
+	"control": {
+	    "input": {
+	        "frequencySend": 0.1
+	    }
 	}
 }
