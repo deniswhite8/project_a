@@ -1,3 +1,5 @@
+var Table = require('Table.js');
+
 var User = function() {
 	this.id =
 	this.login =
@@ -7,7 +9,7 @@ var User = function() {
 }
 
 User.prototype.login = function(login, passwd) {
-	var table = new Table(config.table.user),
+	var table = Table.use(config.table.user),
 		rows  = table.fetch('login', login, 'passwd', passwd);
 
 	if (rows.length !== 1) return false;

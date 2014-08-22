@@ -1,5 +1,5 @@
-var Chunk = function(x, y, chunks) {
-	this._tiles = [];
+var Chunk = function(x, y, tiles, chunks) {
+	this._tiles = tiles;
 	this._avatars = {};
 	this._chunks = chunks;
 
@@ -68,19 +68,27 @@ Chunk.prototype.broadcast = function(name, data, exceptAvatar) {
 };
 
 Chunk.prototype.sendData = function(recipientAvatar, type) {
+	var data = {
+			id: this.index,
+			avatars: []
+		}, msgName = null;
+	
 	if (type == 'new') {
-		recipientAvatar.user.send(config.message.newChunkTiles, this._tiles);
-
-		this._avatars.forEach(function (avatar) {
-			recipientAvatar.user.send(avatar.newMessage());
-		});
+		data.tiles = this._tiles;
+		msgName = config.message.newChunk;
 	} else if (type == 'remove') {
-		recipientAvatar.user.send(config.message.removeChunkTiles, this.index);
-
-		this._avatars.forEach(function (avatar) {
-			recipientAvatar.user.send(avatar.removeMessage());
-		});
+		msgName = config.message.removeChunk;
 	}
+	
+	this._avatars.forEach(function (avatar) {
+		var avatarMsg;
+		if (type == 'new') avatarMsg = avatar.newMessage();
+		else if (type == 'remove') avatarMsg = avatar.removeMessage();
+		
+		data.avatars.push(avatarMsg);
+	});
+	
+	recipientAvatar.user.send(msgName, data);
 };
 
 Chunk.symmetricDifferenceVicinityForeach = function(first, second, callbackForFirst, callbackForSecond) {

@@ -1,0 +1,35 @@
+{
+    "body": {
+        "x": "$x",
+        "y": "$y",
+        "z": 10
+        "angle": "$angle",
+        "radius": 20,
+        "anchor": {
+            "x": 0.5,
+            "y": 0.5
+        },
+        "children": {
+            "border": {
+                "x": -25,
+                "y": -20,
+                "children": {
+                    "line": {
+                        "x": 2,
+                        "y": 2,
+                        "scale": {
+                            "x": "$hp"
+                        },
+                    }
+                }
+            },
+            "turret": {
+                "angle": "$turretAngle",
+                "anchor": {
+                    "x": 0.5,
+                    "y": 0.8
+                } 
+            }
+        }
+    }
+}

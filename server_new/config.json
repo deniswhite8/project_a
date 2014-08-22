@@ -6,6 +6,9 @@
 		},
 		"groupRadius": 2
 	},
+	"map": {
+		"path": "map/"
+	},
 	"table": {
 		"user": "tables/user.json",
 		"avatar": "tables/avatar.json"
@@ -20,8 +23,8 @@
 		"iterations": 10
 	},
 	"message": {
-		"newChunkTiles": "new_tl",
-		"removeChunkTiles": "del_tl",
+		"newChunk": "new_tl",
+		"removeChunk": "del_tl",
 		"newAvatar": "new_av",
 		"removeAvatar": "del_av",
 		"setControlAvatar": "ctrl_av",

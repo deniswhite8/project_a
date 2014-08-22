@@ -1,3 +1,5 @@
+var Table = require('Table.js');
+
 var Avatar = function() {
 	this._cached = new Cached();
 	this.user = null;
@@ -5,10 +7,11 @@ var Avatar = function() {
 
 Avatar.prototype._prepareMessage = function(messageType) {
 	var response = {},
-		params = this._avatarConfig[messageType];
+		params = this._avatarConfig[messageType],
+		self = this;
 
 	params.forEach(function(name) {
-		response[name] = this[name];
+		response[name] = self[name];
 	});
 
 	return this._cached.clean(response, messageType);
@@ -33,8 +36,8 @@ Avatar.prototype.save = function() {
 };
 
 Avatar.prototype.calcChunkIndexByPosition = function() {
-	x = Math.floor(this.x / config.chunk.tile.size / config.chunk.size);
-	y = Math.floor(this.y / config.chunk.tile.size / config.chunk.size);
+	var x = Math.floor(this.x / config.chunk.tile.size / config.chunk.size),
+		y = Math.floor(this.y / config.chunk.tile.size / config.chunk.size);
 
 	var index = x + y * config.chunk.size;
 	return index;
@@ -45,8 +48,9 @@ Avatar.prototype._init = function(params, physics) {
 		this[i] = params[i];
 	}
 
+	this._physics = physics;
 	this._avatarConfig = require(config.avatar.path + this.type + '/config.json');
-	physicsConfig = avatarConfig.physics;
+	var physicsConfig = this._avatarConfig.physics;
 
 	if (physicsConfig) {
 		physicsConfig.x = this.x;
@@ -81,11 +85,11 @@ Avatar.prototype._input = function(input) {
 };
 
 Avatar.prototype.disable = function() {
-	physics.removeBody(this.physicsBody);
+	this._physics.removeBody(this.physicsBody);
 };
 
 Avatar.prototype.enable = function() {
-	physics.addBody(this.physicsBody);
+	this._physics.addBody(this.physicsBody);
 };
 
 

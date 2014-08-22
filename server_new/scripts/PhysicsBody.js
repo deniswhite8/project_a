@@ -7,13 +7,13 @@ var PhysicsBody = function(params) {
 };
 
 PhysicsBody.prototype._create = function(params) {
-	var body = this._body = new cp.Body(params.mass, cp.momentForBox(params.mass, params.width, params.height))
+	var body = this._body = new cp.Body(params.mass, cp.momentForBox(params.mass, params.width, params.height));
 	body.setPos(cp.v(params.x, params.y));
 
 	this._isRotated = params.isRotated;
 	if (this._isRotated) body.setAngle(params.angle);
 
-	var shape = this._shape = new cp.BoxShape(body, params.width, params.height)
+	this._shape = new cp.BoxShape(body, params.width, params.height);
 
 	var controlBody = this._controlBody = new cp.Body(Infinity, Infinity);
 
@@ -28,7 +28,7 @@ PhysicsBody.prototype._create = function(params) {
 		gear.errorBias = 0;
 		gear.maxBias = 1.2;
 		gear.maxForce = 50000;
-	};
+	}
 };
 
 PhysicsBody.prototype._update = function() {
@@ -36,7 +36,7 @@ PhysicsBody.prototype._update = function() {
     if (this._isRotated) this._controlBody.setAngle(-this._body.getAngVel() - this._angle);
 
     var vel = this._body.getVel();
-    if(vel.x * this._oldVel.x <= 0 && vel.y * this._oldVel.y <= 0 && vel.x + this._oldVel.x + vel.y + this._oldVel.y != 0) {
+    if(vel.x * this._oldVel.x <= 0 && vel.y * this._oldVel.y <= 0 && vel.x + this._oldVel.x + vel.y + this._oldVel.y !== 0) {
     	this._body.setVel(cp.vzero);
     }
     this._oldVel = vel;

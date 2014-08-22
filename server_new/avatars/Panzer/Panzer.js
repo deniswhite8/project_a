@@ -1,4 +1,4 @@
-require('../../Avatar.js');
+var Avatar = require('../../Avatar.js');
 
 var Panzer = function () {
 	Avatar.call(this);
@@ -19,8 +19,6 @@ Panzer.prototype.update = function () {
 Panzer.prototype.input = function () {
 
 };
-
-
 
 
 module.exports = Panzer;

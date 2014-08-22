@@ -10,7 +10,7 @@ Physics.prototype.init = function() {
 	this._space.iterations = config.physics.iterations;
 };
 
-PhysicsBody.prototype.addBody = function(body) {
+Physics.prototype.addBody = function(body) {
 	if (body._active) return;
 
 	body._active = true;
@@ -23,7 +23,7 @@ PhysicsBody.prototype.addBody = function(body) {
 	if(body._isRotated) space.addConstraint(body._gear);
 };
 
-PhysicsBody.prototype.removeBody = function(body) {
+Physics.prototype.removeBody = function(body) {
 	if (!body || !(body instanceof PhysicsBody) || !body._active) return;
 
 	body._active = false;
@@ -36,7 +36,7 @@ PhysicsBody.prototype.removeBody = function(body) {
 	if (body._isRotated) space.removeConstraint(body._gear);
 };
 
-Physics.prototype.createBody = function() {
+Physics.prototype.createBody = function(params) {
 	var body = new PhysicsBody(params);
 	this.addBody(body);
 };

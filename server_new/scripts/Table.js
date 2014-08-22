@@ -1,8 +1,9 @@
 var Table = function(tableName) {
-	this._tableData = requre(tableName);	
+	this._tableData = require(tableName);	
 };
 
 Table._tables = {};
+
 Table.use = function(tableName) {
 	if (!Table._tables[tableName]) {
 		Table._tables[tableName] = new Table(tableName);

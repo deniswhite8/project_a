@@ -1,0 +1,12 @@
+{
+    "network": {
+        "server": {
+            "host": "http://localhost",
+            "port": 8080
+        }
+    },
+    "avatar": {
+        "types": ["Man", "Panzer", "Car", "Passage"],
+		"path": "avatars/"
+	}
+}
