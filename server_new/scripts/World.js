@@ -30,7 +30,7 @@ World.prototype.start = function() {
 	setInterval(this._update, config.physics.iterations);
 };
 
-World.prototype.userLogin = function(data) {
+World.prototype.userLogin = function(data, socket) {
 	var user = new User();
 
 	if (user.login(data.login, data.passwd)) {
@@ -42,11 +42,19 @@ World.prototype.userLogin = function(data) {
 	}
 };
 
-World.prototype.userInput = function(data) {
+World.prototype.userInput = function(data, socket) {
+	var user = new User();
+	user.getBySocket(socket);
 	
+	var avatarId = user.getAvatarId(),
+		avatar = this.getAvatar(avatarId);
+		
+	if (!avatar) return;
+	
+	avatar._input(data);
 };
 
-World.prototype.userDisconect = function(data) {
+World.prototype.userDisconect = function(data, socket) {
 
 };
 
@@ -57,14 +65,14 @@ World.prototype.loadMap = function() {
 		var chunkData = require(config.map.path + "/" + fileName),
 			chunk = new Chunk(chunkData.x, chunkData.y, chunkData.tiles, self._chunks);
 			
-		self._chunks[chunk.index] = chunk;
+		self._chunks[chunk.id] = chunk;
 	});
 };
 
 World.prototype.addAvatar = function(avatar) {
 	if (!avatar || !avatar.id) return;
 
-	var chunk = this._chunks[avatar._calcChunkIndexByPosition()];
+	var chunk = this._chunks[avatar._calcChunkIdByPosition()];
 	if (chunk)
 		chunk.addAvatar(avatar);
 
@@ -74,7 +82,7 @@ World.prototype.addAvatar = function(avatar) {
 World.prototype.removeAvatar = function(avatar) {
 	if (!avatar || !avatar.id) return;
 
-	var chunk = this._chunks[avatar._calcChunkIndexByPosition()];
+	var chunk = this._chunks[avatar._calcChunkIdByPosition()];
 	if (chunk)
 		chunk.removeAvatar(avatar);
 

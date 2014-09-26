@@ -8,17 +8,22 @@ var Network = function() {
 Network.prototype.listen = function() {
     io.listen(config.network.port);
 
+    var self = this;
     io.sockets.on('connection', function (socket) {
-        this._eventCallbacks.forEach(function(eventCallback) {
+        self._eventCallbacks.forEach(function(eventCallback) {
             socket.on(eventCallback.name, eventCallback.callback);
         });
     });
 };
 
 Network.prototype.on = function(name, callback) {
+    var self = this;
+    
     this._eventCallbacks.push({
         name: name,
-        callback: callback
+        callback: function(data) {
+            callback.call(self, data, this);        
+        }
     });
 };
 

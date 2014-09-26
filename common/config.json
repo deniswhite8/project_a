@@ -1,0 +1,16 @@
+{
+    "network": {
+    	"port": 8080
+    },
+    "message": {
+    	"newChunk": "new_tl",
+    	"removeChunk": "del_tl",
+    	"newAvatar": "new_av",
+    	"removeAvatar": "del_av",
+    	"setControlAvatar": "ctrl_av",
+    
+    	"userLogin": "login",
+    	"userInput": "input",
+    	"userDisconect": "disconnect"
+    }
+}

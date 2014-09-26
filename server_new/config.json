@@ -13,24 +13,10 @@
 		"user": "tables/user.json",
 		"avatar": "tables/avatar.json"
 	},
-	"network": {
-		"port": 8080
-	},
 	"avatar": {
 		"path": "avatars/"
 	},
 	"physics": {
 		"iterations": 10
 	},
-	"message": {
-		"newChunk": "new_tl",
-		"removeChunk": "del_tl",
-		"newAvatar": "new_av",
-		"removeAvatar": "del_av",
-		"setControlAvatar": "ctrl_av",
-
-		"userLogin": "login",
-		"userInput": "input",
-		"userDisconect": "disconnect"
-	}
 }

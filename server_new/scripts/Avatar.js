@@ -35,12 +35,12 @@ Avatar.prototype.save = function() {
 	var table = Table.use(config.table.avatar);
 };
 
-Avatar.prototype.calcChunkIndexByPosition = function() {
+Avatar.prototype.calcChunkIdByPosition = function() {
 	var x = Math.floor(this.x / config.chunk.tile.size / config.chunk.size),
 		y = Math.floor(this.y / config.chunk.tile.size / config.chunk.size);
 
-	var index = x + y * config.chunk.size;
-	return index;
+	var chunkId = x + y * config.chunk.size;
+	return chunkId;
 };
 
 Avatar.prototype._init = function(params, physics) {
@@ -74,7 +74,7 @@ Avatar.prototype._update = function() {
 	}
 	if (this.update) this.update();
 
-	if (this.calcChunkIndexByPosition() != this.chunk.index) {
+	if (this.calcChunkIdByPosition() != this.chunk.id) {
 		return true;
 	}
 };

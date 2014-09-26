@@ -6,7 +6,9 @@ var User = function() {
 	this._primaryAvatar =
 	this._foreignAvatar =
 	this._socket = null;
-}
+};
+
+User.userBySocketId = [];
 
 User.prototype.login = function(login, passwd) {
 	var table = Table.use(config.table.user),
@@ -23,8 +25,20 @@ User.prototype.login = function(login, passwd) {
 	return true;
 };
 
+User.prototype.getBySocket = function(socket) {
+	return User.userBySocketId[socket.id];
+};
+
 User.prototype.setSocket = function(socket) {
 	this._socket = socket;
+	User.userBySocketId[socket.id] = this;
+};
+
+User.prototype.logout = function() {
+	var socket = this._socket;
+	if (!socket || !User.userBySocketId[socket.id]) return;
+	
+	delete User.userBySocketId[socket.id];	
 };
 
 User.prototype.send = function(name, data) {

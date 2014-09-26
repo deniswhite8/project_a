@@ -1,33 +1,13 @@
-var avatarTypes = config.avatar.types,
-	avatarPath = config.avatar.path,
-	defineArguments = [];
-	
-avatarTypes.forEach(function(typeName, i) {
-    defineArguments[i * 2] = '../' + avatarPath + '/' + typeName + '/' + typeName;
-    defineArguments[i * 2 + 1] = '../' + avatarPath + '/' + typeName + '/config.json';
-});
+var AvatarLoader = function() {
 
-define(defineArguments, function () {
-	
-	var AvatarLoader = function() {
-	
-	};
+};
 
-	AvatarLoader._avatarClasses = {};
-	AvatarLoader._avatarConfigs = {};
-	
-	AvatarLoader.getClass = function(type) {
-		return AvatarLoader._avatarClasses[type];
-	};
-	
-	AvatarLoader.getConfig = function(type) {
-		return AvatarLoader._avatarConfigs[type];
-	};
+AvatarLoader.prototype.getClass = function(type) {
+	return require('../' + config.avatar.path + '/' + type + '/' + typeName);
+};
 
-	avatarTypes.forEach(function (typeName, i) {
-		AvatarLoader._avatarClasses[typeName] = arguments[i * 2];
-		AvatarLoader._avatarConfigs[typeName] = arguments[i * 2 + 1];
-	});
+AvatarLoader.prototype.getConfig = function(type) {
+	return require('../' + config.avatar.path + '/' + type + '/config.json');
+};
 
-	return AvatarLoader;
-});
+module.exports = AvatarLoader;
