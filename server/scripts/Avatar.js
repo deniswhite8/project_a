@@ -1,4 +1,5 @@
-var Table = require('Table.js');
+var Table = require('Table.js'),
+	Cached = require('../common/Cached.js');
 
 var Avatar = function() {
 	this._cached = new Cached();

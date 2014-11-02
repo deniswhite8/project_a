@@ -3,27 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Document</title>
-    <script data-main="scripts/main" src="scripts/require.js"></script>
-    <script>
-		require.config({
-			shim: {
-				'socket.io': {
-					exports: 'io'
-				},
-				'pixi': {
-					exports: 'PIXI'
-				},
-				'stats': {
-					exports: 'Stats'
-				}
-			},
-			paths: {
-				'socket.io': 'http://localhost:8080/socket.io/socket.io.js',
-				'pixi': 'pixi',
-				'stats': 'stats.min'
-			}
-		});
-	</script>
+	<script src="min.js"></script>
 	<style>
 		body {
 			background-color: #f5f5f5;

@@ -36,7 +36,7 @@ World.prototype.userLogin = function(data, socket) {
 	if (user.login(data.login, data.passwd)) {
 		var avatarId = user.getAvatarId();
 		if (this.getAvatar(avatarId)) return;
-		var avatar = this.createAvatar(avatarId);
+		var avatar = this.loadAvatar(avatarId);
 		this.addAvatar(avatar);
 		user.send(config.messages.controlAvatar, avatarId);
 	}
@@ -95,7 +95,7 @@ World.prototype.getAvatar = function(id) {
 	return this._avatars[id];
 };
 
-World.prototype.createAvatar = function(id) {
+World.prototype.loadAvatar = function(id) {
 	if (!id || this.getAvatar(id)) return;
 	
 	var table = Table.use(config.table.avatar),

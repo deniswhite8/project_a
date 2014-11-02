@@ -28,7 +28,7 @@ Cached.prototype.clean = function(data, name) {
 	return result;
 };
 
-Cached.prototype.dirty = function(data, name) {
+Cached.prototype.restore = function(data, name) {
 	if (!name) return null;
 	if (!this._dirtyData[name]) this._dirtyData[name] = {};
 	
