@@ -1,13 +1,15 @@
 require('../../common/util.js');
 
 var Physics = require('./Physics.js'),
-	Network = require('./Network.js'),
+	NetworkEvent = require('./NetworkEvent.js'),
 	User = require('./User.js'),
 	Table = require('./Table.js'),
 	Chunk = require('./Chunk.js'),
 	localConfig = require('../config.json'),
 	globalConfig = require('../../common/config.json'),
 	Logger = require('../../common/Logger.js'),
+	PageApp = require('./Page.js'),
+	Connect = require('./Connect.js'),
 	fs = require("fs"),
 	self = null,
 	config = null,
@@ -21,14 +23,21 @@ var World = function() {
 
 	this._chunks = [];
 	this._avatars = {};
-
 	logger.info('Creating world ...');
+	
 	logger.info('Init physics module ...');
 	this._physics = new Physics();
-	logger.info('Init newtwork module ...');
-	this._network = new Network();
-	logger.info('World was created');
 	
+	logger.info('Init page app ...');
+	this._pageApp = new PageApp();
+	
+	logger.info('Init connect ...');
+	this._connect = new Connect(this._pageApp.getApp());
+	
+	logger.info('Init newtwork module ...');
+	this._networkEvent = new NetworkEvent(this._connect.getHttpServer());
+	
+	logger.info('World was created');
 	self = this;
 };
 
@@ -36,15 +45,16 @@ World.prototype.start = function() {
 	logger.info('Starting world ...');
 	logger.info('Starting physics ...');
 	this._physics.init();
+	
 	logger.info('Load world map ...');
 	this.loadMap();
 
-	this._network.on(config.messages.userLogin, this.onUserLogin);
-	this._network.on(config.messages.userInput, this.onUserInput);
-	this._network.on(config.messages.userDisconect, this.onUserDisconect);
+	this._networkEvent.on(config.messages.userLogin, this.onUserLogin);
+	this._networkEvent.on(config.messages.userInput, this.onUserInput);
+	this._networkEvent.on(config.messages.userDisconect, this.onUserDisconect);
 
-	logger.info('Starting network listening (on ' + config.network.port + ' port) ...');
-	this._network.listen();
+	logger.info('Starting network listening (on ' + this._connect.getPort() + ' port) ...');
+	this._connect.listen();
 
 	logger.info('Start update world main loop');
 	setInterval(this._update, config.physics.iterations);

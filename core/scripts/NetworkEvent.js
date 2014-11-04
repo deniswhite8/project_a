@@ -1,23 +1,20 @@
-var io = require('socket.io'),
-    config = null;
+var socketIo = require('socket.io');
 
-var Network = function() {
+var NetworkEvent = function(httpServer) {
     this._eventCallbacks = [];
-    config = global.config;
+    this._io = socketIo(httpServer);
 };
 
-Network.prototype.listen = function() {
-    io = io.listen(config.network.port);
-
+NetworkEvent.prototype.listen = function() {
     var self = this;
-    io.sockets.on('connection', function (socket) {
+    this._io.sockets.on('connection', function (socket) {
         self._eventCallbacks.forEach(function(eventCallback) {
             socket.on(eventCallback.name, eventCallback.callback);
         });
     });
 };
 
-Network.prototype.on = function(name, callback) {
+NetworkEvent.prototype.on = function(name, callback) {
     var self = this;
     
     this._eventCallbacks.push({
@@ -28,4 +25,4 @@ Network.prototype.on = function(name, callback) {
     });
 };
 
-module.exports = Network;
+module.exports = NetworkEvent;

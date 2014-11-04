@@ -20,7 +20,7 @@ Graphics.prototype.init = function(wrapperDivId, width, height, stats) {
     this._viewPort.addChild(this._mapPivot);
 };
 
-Graphics.prototype.gerViewElement = function() {
+Graphics.prototype.getViewElement = function() {
     return this._renderer.view;  
 };
 

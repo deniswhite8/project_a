@@ -1,7 +1,4 @@
 {
-    "network": {
-    	"port": 8080
-    },
     "messages": {
     	"newChunk": "new_tl",
     	"removeChunk": "del_tl",

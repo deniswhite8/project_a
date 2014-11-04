@@ -18,5 +18,14 @@
 	},
 	"physics": {
 		"iterations": 10
-	}
+	},
+	"network": {
+    	"port": 8080
+    },
+    "frontend": {
+    	"root": {
+    		"directory": "frontend",
+    		"file": "index.html"
+    	}
+    }
 }

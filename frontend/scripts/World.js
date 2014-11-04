@@ -32,13 +32,13 @@ World.prototype.start = function() {
     this._graphics.init('centerDiv', 640, 480, this._stats);
     this._input.init(this._graphics.getViewElement());
     
-    this._network.on(config.message.newChunk, this.onNewChunk);
-    this._network.on(config.message.removeChunk, this.onRemoveChunk);
-    this._network.on(config.message.newAvatar, this.onNewAvatar);
-    this._network.on(config.message.removeAvatar, this.onRemoveAvatar);
-    this._network.on(config.message.setControlAvatar, this.onSetControlAvatar);
+    this._network.on(config.messages.newChunk, this.onNewChunk);
+    this._network.on(config.messages.removeChunk, this.onRemoveChunk);
+    this._network.on(config.messages.newAvatar, this.onNewAvatar);
+    this._network.on(config.messages.removeAvatar, this.onRemoveAvatar);
+    this._network.on(config.messages.setControlAvatar, this.onSetControlAvatar);
     
-    this._network.send(config.message.userLogin, {
+    this._network.send(config.messages.userLogin, {
         login: 'denis',
         passwd: 'qwe'
     });
