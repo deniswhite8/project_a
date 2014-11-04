@@ -2,7 +2,7 @@
     "body": {
         "x": "$x",
         "y": "$y",
-        "z": 10
+        "z": 10,
         "angle": "$angle",
         "radius": 20,
         "anchor": {

@@ -2,9 +2,6 @@
     "network": {
         "host": "http://localhost",
     },
-    "avatar": {
-		"path": "avatars/"
-	},
 	"control": {
 	    "input": {
 	        "frequencySend": 0.1

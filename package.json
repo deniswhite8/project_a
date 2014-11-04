@@ -4,7 +4,10 @@
     "private": true,
     "dependencies": {
         "socket.io": "*",
-        "socket.io-browserify": "*",
-        "browserify": "*"
+        "express": "*",
+        "browserify": "*",
+        "chipmunk": "*",
+        "colors": "*",
+        "pixi": "*"
     }
 }

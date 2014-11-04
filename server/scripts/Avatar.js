@@ -1,9 +1,12 @@
-var Table = require('Table.js'),
-	Cached = require('../common/Cached.js');
+var Table = require('./Table.js'),
+	Cached = require('../common/Cached.js'),
+	config = null;
 
 var Avatar = function() {
 	this._cached = new Cached();
 	this.user = null;
+	
+	config = global.config;
 };
 
 Avatar.prototype._prepareMessage = function(messageType) {

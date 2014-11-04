@@ -1,12 +1,15 @@
-var io = require('socket.io');
+var config = null;
 
 var Network = function() {
     this._eventCallbacks = [];
     this._socket = null;
+    
+    config = window.config;
 };
 
 Network.prototype.connect = function() {
-    this._socket = io.connect(config.network.host + ':' + config.network.port);
+    // this._socket = io.connect(config.network.host + ':' + config.network.port);
+    this._socket = io();
 };
 
 Network.prototype.on = function(name, callback) {

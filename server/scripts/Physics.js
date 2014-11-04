@@ -1,8 +1,10 @@
-var cp = require('chipmunk');
-
+var cp = require('chipmunk'),
+	PhysicsBody = require('./PhysicsBody.js'),
+	config = null;
 
 var Physics = function() {
     this._space = null;
+    config = global.config;
 };
 
 Physics.prototype.init = function() {

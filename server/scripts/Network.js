@@ -1,12 +1,13 @@
-var io = require('socket.io');
-
+var io = require('socket.io'),
+    config = null;
 
 var Network = function() {
     this._eventCallbacks = [];
+    config = global.config;
 };
 
 Network.prototype.listen = function() {
-    io.listen(config.network.port);
+    io = io.listen(config.network.port);
 
     var self = this;
     io.sockets.on('connection', function (socket) {

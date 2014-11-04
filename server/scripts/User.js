@@ -1,4 +1,5 @@
-var Table = require('Table.js');
+var Table = require('./Table.js'),
+	config = null;
 
 var User = function() {
 	this.id =
@@ -6,6 +7,8 @@ var User = function() {
 	this._primaryAvatar =
 	this._foreignAvatar =
 	this._socket = null;
+	
+	config = global.config;
 };
 
 User.userBySocketId = [];

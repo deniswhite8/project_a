@@ -3,4 +3,7 @@ Map class ?
 multiply-level object Cached ?
 
 this and socket pointer in Network.on callback
-browserify (http://habrahabr.ru/post/224825/, https://www.npmjs.org/package/socket.io-browserify), shared files
+
+Client:
+socket.io-browserify
+browserify folder, requred all avatars

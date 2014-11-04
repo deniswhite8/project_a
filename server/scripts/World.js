@@ -1,32 +1,52 @@
-var Physics = require('Physics.js'),
-	Network = require('Network.js'),
-	User = require('User.js'),
-	Table = require('Table.js'),
-	Chunk = require('Chunk.js'),
-	config = require('../config.json'),
-	fs = require("fs");
+require('../../common/util.js');
 
+var Physics = require('./Physics.js'),
+	Network = require('./Network.js'),
+	User = require('./User.js'),
+	Table = require('./Table.js'),
+	Chunk = require('./Chunk.js'),
+	localConfig = require('../config.json'),
+	globalConfig = require('../../common/config.json'),
+	Logger = require('../../common/Logger.js'),
+	fs = require("fs"),
+	self = null,
+	config = null,
+	logger = null;
 
 var World = function() {
-	global.config = config;
+	config = global.config = globalConfig.extend(localConfig);
+	
+	logger = new Logger();
+	global.logger = logger;
 
 	this._chunks = [];
 	this._avatars = {};
 
+	logger.info('Creating world ...');
+	logger.info('Init physics module ...');
 	this._physics = new Physics();
+	logger.info('Init newtwork module ...');
 	this._network = new Network();
+	logger.info('World was created');
+	
+	self = this;
 };
 
 World.prototype.start = function() {
+	logger.info('Starting world ...');
+	logger.info('Starting physics ...');
 	this._physics.init();
+	logger.info('Load world map ...');
 	this.loadMap();
 
 	this._network.on(config.messages.userLogin, this.onUserLogin);
 	this._network.on(config.messages.userInput, this.onUserInput);
 	this._network.on(config.messages.userDisconect, this.onUserDisconect);
 
+	logger.info('Starting network listening (on ' + config.network.port + ' port) ...');
 	this._network.listen();
 
+	logger.info('Start update world main loop');
 	setInterval(this._update, config.physics.iterations);
 };
 
@@ -60,9 +80,9 @@ World.prototype.userDisconect = function(data, socket) {
 
 World.prototype.loadMap = function() {
 	var self = this;
-	
-	fs.readdirSync(config.map.path).forEach(function(fileName) {
-		var chunkData = require(config.map.path + "/" + fileName),
+
+	fs.readdirSync(__dirname + '/../' + config.map.path).forEach(function(fileName) {
+		var chunkData = require('./../' + config.map.path + "/" + fileName),
 			chunk = new Chunk(chunkData.x, chunkData.y, chunkData.tiles, self._chunks);
 			
 		self._chunks[chunk.id] = chunk;
@@ -114,7 +134,7 @@ World.prototype.loadAvatar = function(id) {
 };
 
 World.prototype._update = function() {
-	this._chunks.forEach(function (chunk) {
+	self._chunks.forEach(function (chunk) {
 		chunk._update();
 	});
 };

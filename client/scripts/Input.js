@@ -1,4 +1,4 @@
-var Cached = require('./Cached.js')
+var Cached = require('../../common/Cached.js');
 
 var Input = function() {
     this._dx = 0;

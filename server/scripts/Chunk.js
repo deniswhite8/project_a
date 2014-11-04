@@ -1,4 +1,8 @@
+var config = null;
+
 var Chunk = function(x, y, tiles, chunks) {
+	config = global.config;
+	
 	this._tiles = tiles;
 	this._avatars = {};
 	this._chunks = chunks;
@@ -37,7 +41,7 @@ Chunk.transferAvatar = function(avatar) {
 	if (!avatar || !avatar.id) return;
 
 	var oldChunk = avatar.chunk,
-		newChunk = chunks[avatar.calcChunkIdByPosition()];
+		newChunk = this._chunks[avatar.calcChunkIdByPosition()];
 
 	if (oldChunk == newChunk) return;
 
@@ -58,7 +62,7 @@ Chunk.transferAvatar = function(avatar) {
 };
 
 Chunk.prototype.broadcast = function(name, data, exceptAvatar) {
-	var userId = avatar.user.id;
+	var userId = exceptAvatar.user.id;
 
 	this._avatars.forEach(function(avatar) {
 		if (avatar.user.id !== userId) {
@@ -129,11 +133,13 @@ Chunk.prototype.vicinityForeach = function(callback) {
 };
 
 Chunk.prototype._update = function(callback) {
-	this._avatars.forEach(function (avatar) {
+	for (var avatarId in this._avatars) {
+		if (typeof avatarId !== 'number') continue;
+		var avatar = this._avatars[avatarId];
 		if (avatar._update()) {
 			Chunk.transferAvatar(avatar);
 		}
-	});
+	}
 };
 
 module.exports = Chunk;

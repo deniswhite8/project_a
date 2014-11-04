@@ -3,11 +3,16 @@ Object.prototype.extend = function(source) {
     
     for (var prop in source) {
         if (typeof source[prop] === 'object') {
+            if (typeof target[prop] !== 'object') {
+                target[prop] = {};
+            }
             target[prop].extend(source[prop]);
         } else if (target[prop] === undefined) {
             target[prop] = source[prop];
         }
     }
+    
+    return target;
 };
 
 Object.prototype.clone = function() {

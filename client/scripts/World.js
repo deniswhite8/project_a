@@ -1,11 +1,18 @@
+require('../../common/util.js');
+
 var AvatarLoader = require('./AvatarLoader.js'),
     Stats = require('./stats.js'),
     Graphics = require('./Graphics.js'),
     Input = require('./Input.js'),
     Network = require('./Network.js'),
-    Chunk = require('./Chunk.js');
+    Chunk = require('./Chunk.js'),
+    localConfig = require('../config.json'),
+	globalConfig = require('../../common/config.json'),
+    config = null;
 
 var World = function() {
+    config = window.config = globalConfig.extend(localConfig);
+    
     this._avatars = [];
     this._frameCounter = 0;
     this._stats = new Stats();

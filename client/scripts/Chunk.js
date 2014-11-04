@@ -1,4 +1,5 @@
-var SpriteLoader = require('SpriteLoader');
+var SpriteLoader = require('./SpriteLoader'),
+    config = null;
 
 var Chunk = function(data) {
     this.x = data.x;
@@ -7,6 +8,8 @@ var Chunk = function(data) {
     this._tiles = data.tiles;
     
     this._rootGraphicsNode = null;
+    
+    config = window.config;
 };
 
 Chunk.prototype.createTiles = function() {

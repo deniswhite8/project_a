@@ -1,5 +1,4 @@
-var PIXI = require('pixi'),
-    Stats = require('stats');
+var PIXI = require('pixi');
 
 var Graphics = function() {
 

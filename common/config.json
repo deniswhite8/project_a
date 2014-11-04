@@ -2,7 +2,7 @@
     "network": {
     	"port": 8080
     },
-    "message": {
+    "messages": {
     	"newChunk": "new_tl",
     	"removeChunk": "del_tl",
     	"newAvatar": "new_av",
