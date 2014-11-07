@@ -51,41 +51,53 @@ World.prototype.start = function() {
 
 	this._networkEvent.on(config.messages.userLogin, this.onUserLogin);
 	this._networkEvent.on(config.messages.userInput, this.onUserInput);
-	this._networkEvent.on(config.messages.userDisconect, this.onUserDisconect);
+	this._networkEvent.on('disconnect', this.onUserDisconect);
 
 	logger.info('Starting network listening (on ' + this._connect.getPort() + ' port) ...');
 	this._connect.listen();
+
+	logger.info('Starting network event listening ...');
+	this._networkEvent.listen();
 
 	logger.info('Start update world main loop');
 	setInterval(this._update, config.physics.iterations);
 };
 
-World.prototype.userLogin = function(data, socket) {
+World.prototype.onUserLogin = function(data, socket) {
 	var user = new User();
 
 	if (user.login(data.login, data.passwd)) {
+		logger.info('User login: ' + user.getLogin());
+
+		user.setSocket(socket);
 		var avatarId = user.getAvatarId();
-		if (this.getAvatar(avatarId)) return;
-		var avatar = this.loadAvatar(avatarId);
-		this.addAvatar(avatar);
+		if (self.getAvatar(avatarId)) return;
+		var avatar = self.loadAvatar(avatarId);
+		avatar.user = user;
+		self.addAvatar(avatar);
 		user.send(config.messages.controlAvatar, avatarId);
 	}
 };
 
-World.prototype.userInput = function(data, socket) {
+World.prototype.onUserInput = function(data, socket) {
 	var user = new User();
-	user.getBySocket(socket);
+	user = user.getBySocket(socket);
 	
 	var avatarId = user.getAvatarId(),
-		avatar = this.getAvatar(avatarId);
+		avatar = self.getAvatar(avatarId);
 		
 	if (!avatar) return;
 	
 	avatar._input(data);
 };
 
-World.prototype.userDisconect = function(data, socket) {
-
+World.prototype.onUserDisconect = function(data, socket) {
+	var user = new User();
+	user = user.getBySocket(socket);
+	
+	if (!user.id) return;
+	
+	logger.info('User disconect: ' + user.getLogin());
 };
 
 World.prototype.loadMap = function() {
@@ -102,7 +114,7 @@ World.prototype.loadMap = function() {
 World.prototype.addAvatar = function(avatar) {
 	if (!avatar || !avatar.id) return;
 
-	var chunk = this._chunks[avatar._calcChunkIdByPosition()];
+	var chunk = this._chunks[avatar.calcChunkIdByPosition()];
 	if (chunk)
 		chunk.addAvatar(avatar);
 
@@ -112,7 +124,7 @@ World.prototype.addAvatar = function(avatar) {
 World.prototype.removeAvatar = function(avatar) {
 	if (!avatar || !avatar.id) return;
 
-	var chunk = this._chunks[avatar._calcChunkIdByPosition()];
+	var chunk = this._chunks[avatar.calcChunkIdByPosition()];
 	if (chunk)
 		chunk.removeAvatar(avatar);
 
@@ -129,7 +141,7 @@ World.prototype.loadAvatar = function(id) {
 	if (!id || this.getAvatar(id)) return;
 	
 	var table = Table.use(config.table.avatar),
-		rows  = table.fetch('id', id);
+		rows  = table.fetch({'id': id});
 
 	if (rows.length !== 1) return;
 
@@ -138,7 +150,7 @@ World.prototype.loadAvatar = function(id) {
 	var avatarClass = require('../' + config.avatar.path + '/' + row.type + '/' + row.type + '.js'),
 		avatar = new avatarClass();
 
-	avatar._init(row.params, this._physics);
+	avatar._init(row, this._physics);
 
 	return avatar;
 };

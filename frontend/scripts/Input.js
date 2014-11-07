@@ -64,7 +64,7 @@ Input.prototype.init = function (viewElement, avatars) {
 
 Input.prototype.keyIsPressed = function(keyCode) {
 	if (typeof keyCode == 'string')
-		keyCode = keyCode.charCodeAt(0).toUpperCase();
+		keyCode = keyCode.toUpperCase().charCodeAt(0);
 	return this._pressedKeys[keyCode];
 };
 

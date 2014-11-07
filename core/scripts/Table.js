@@ -1,5 +1,5 @@
 var Table = function(tableName) {
-	this._tableData = require(tableName);	
+	this._tableData = require('../' + tableName).data;	
 };
 
 Table._tables = {};
@@ -12,17 +12,14 @@ Table.use = function(tableName) {
 	return Table._tables[tableName];
 };
 
-Table.prototype.fetch = function() {
-	if (!arguments.length || arguments.length % 2) return;
-
+Table.prototype.fetch = function(condition) {
 	var result = [];
 	this._tableData.forEach(function(row) {
 		var ok = true;
-		for (var i = 0; i < arguments.length - 1; i++) {
-			var name = arguments[i],
-				value = arguments[i + 1];
+		for (var name in condition) {
+			if (typeof name !== 'string' || typeof condition === 'object') continue;
 
-			if (row[name] !== value) {
+			if (row[name] !== condition[name]) {
 				ok = false;
 				break;
 			}

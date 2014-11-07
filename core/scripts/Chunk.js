@@ -64,11 +64,14 @@ Chunk.transferAvatar = function(avatar) {
 Chunk.prototype.broadcast = function(name, data, exceptAvatar) {
 	var userId = exceptAvatar.user.id;
 
-	this._avatars.forEach(function(avatar) {
+	for (var avatarId in this._avatars) {
+		if (typeof avatarId !== 'number') continue;
+		var avatar = this._avatars[avatarId];
+		
 		if (avatar.user.id !== userId) {
 			avatar.user.send(name, data);
 		}
-	});
+	}
 };
 
 Chunk.prototype.sendData = function(recipientAvatar, type) {
@@ -81,18 +84,21 @@ Chunk.prototype.sendData = function(recipientAvatar, type) {
 		data.tiles = this._tiles;
 		data.x = this.x;
 		data.y = this.y;
-		msgName = config.message.newChunk;
+		msgName = config.messages.newChunk;
 	} else if (type == 'remove') {
-		msgName = config.message.removeChunk;
+		msgName = config.messages.removeChunk;
 	}
 	
-	this._avatars.forEach(function (avatar) {
-		var avatarMsg;
+	for (var avatarId in this._avatars) {
+		if (typeof avatarId !== 'number') continue;
+		var avatar = this._avatars[avatarId],
+			avatarMsg;
+
 		if (type == 'new') avatarMsg = avatar.newMessage();
 		else if (type == 'remove') avatarMsg = avatar.removeMessage();
 		
 		data.avatars.push(avatarMsg);
-	});
+	}
 	
 	recipientAvatar.user.send(msgName, data);
 };
@@ -136,6 +142,7 @@ Chunk.prototype._update = function(callback) {
 	for (var avatarId in this._avatars) {
 		if (typeof avatarId !== 'number') continue;
 		var avatar = this._avatars[avatarId];
+		
 		if (avatar._update()) {
 			Chunk.transferAvatar(avatar);
 		}

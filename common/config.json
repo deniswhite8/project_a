@@ -7,7 +7,6 @@
     	"setControlAvatar": "ctrl_av",
     
     	"userLogin": "login",
-    	"userInput": "input",
-    	"userDisconect": "disconnect"
+    	"userInput": "input"
     }
 }

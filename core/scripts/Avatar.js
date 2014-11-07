@@ -1,5 +1,5 @@
 var Table = require('./Table.js'),
-	Cached = require('../common/Cached.js'),
+	Cached = require('../../common/Cached.js'),
 	config = null;
 
 var Avatar = function() {
@@ -53,7 +53,7 @@ Avatar.prototype._init = function(params, physics) {
 	}
 
 	this._physics = physics;
-	this._avatarConfig = require(config.avatar.path + this.type + '/config.json');
+	this._avatarConfig = require('../' + config.avatar.path + '/' + this.type + '/config.json');
 	var physicsConfig = this._avatarConfig.physics;
 
 	if (physicsConfig) {

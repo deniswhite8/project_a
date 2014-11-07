@@ -8,7 +8,6 @@ var Network = function() {
 };
 
 Network.prototype.connect = function() {
-    // this._socket = io.connect(config.network.host + ':' + config.network.port);
     this._socket = io();
 };
 
@@ -20,7 +19,7 @@ Network.prototype.on = function(name, callback) {
     });
 };
 
-Network.prototype.sen = function(name, data) {
+Network.prototype.send = function(name, data) {
     if (!this._socket) return;
     
     this._socket.emit(name, data);

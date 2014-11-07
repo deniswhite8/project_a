@@ -41,6 +41,8 @@ Physics.prototype.removeBody = function(body) {
 Physics.prototype.createBody = function(params) {
 	var body = new PhysicsBody(params);
 	this.addBody(body);
+	
+	return body;
 };
 
 module.exports = Physics;

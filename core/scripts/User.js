@@ -3,7 +3,7 @@ var Table = require('./Table.js'),
 
 var User = function() {
 	this.id =
-	this.login =
+	this._login =
 	this._primaryAvatar =
 	this._foreignAvatar =
 	this._socket = null;
@@ -11,17 +11,17 @@ var User = function() {
 	config = global.config;
 };
 
-User.userBySocketId = [];
+User.userBySocketId = {};
 
 User.prototype.login = function(login, passwd) {
 	var table = Table.use(config.table.user),
-		rows  = table.fetch('login', login, 'passwd', passwd);
+		rows  = table.fetch({'login': login, 'passwd': passwd});
 
 	if (rows.length !== 1) return false;
 
 	var row = rows[0];
 	this.id = row.id;
-	this.login = row.login;
+	this._login = row.login;
 	this._primaryAvatar = row.primaryAvatar;
 	this._foreignAvatar = row.foreignAvatar;
 
@@ -50,7 +50,11 @@ User.prototype.send = function(name, data) {
 };
 
 User.prototype.getAvatarId = function() {
-	return this._foreignAvatar;
+	return this._primaryAvatar;
+};
+
+User.prototype.getLogin = function() {
+	return this._login;
 };
 
 module.exports = User;

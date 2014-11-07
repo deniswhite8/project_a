@@ -1,4 +1,4 @@
-var Avatar = require('../../Avatar.js');
+var Avatar = require('../../scripts/Avatar.js');
 
 var Panzer = function () {
 	Avatar.call(this);

@@ -1,9 +1,7 @@
-client & server:
-Map class ?
-multiply-level object Cached ?
+core & frontend:
+Map class (?)
+multiply-level object Cached
+core -> server, frontend -> client, (server + client) -> core, avatars -> avatars
 
-this and socket pointer in Network.on callback
-
-Client:
-socket.io-browserify
+frontend:
 browserify folder, requred all avatars

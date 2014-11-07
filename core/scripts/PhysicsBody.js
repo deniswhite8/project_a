@@ -24,7 +24,7 @@ PhysicsBody.prototype._create = function(params) {
     var gear = this._gear = null;
 
     if (this._isRotated) {
-    	gear = new cp.GearJoint(controlBody, body, 0, 1);
+    	this._gear = gear = new cp.GearJoint(controlBody, body, 0, 1);
 		gear.errorBias = 0;
 		gear.maxBias = 1.2;
 		gear.maxForce = 50000;

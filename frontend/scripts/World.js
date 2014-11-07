@@ -129,7 +129,7 @@ World.prototype._updateFunction = function() {
     
     if(this._frameCounter % this._frameFrequencyInputSend) {
 		var inputData = this._input.getInputData();
-		if (inputData) this._network.send(config.message.userInput, inputData);
+		if (inputData) this._network.send(config.messages.userInput, inputData);
 	}
 
 	if (this._controlAvatar) {
