@@ -6,13 +6,13 @@ var Chunk = function(data) {
     this.y = data.y;
     this.id = data.id;
     this._tiles = data.tiles;
-    
     this._rootGraphicsNode = null;
-    
     config = window.config;
+    
+    this._createTiles();
 };
 
-Chunk.prototype.createTiles = function() {
+Chunk.prototype._createTiles = function() {
     var spriteLoader = new SpriteLoader(),
         self = this;
         
@@ -22,7 +22,7 @@ Chunk.prototype.createTiles = function() {
     
     this._tiles.forEach(function(tile, i) {
         if (!tile) return;
-        var tileSprite = spriteLoader.load(tile);
+        var tileSprite = spriteLoader.load(config.tileset.path + '/' + tile + '.' + config.tileset.extension);
             
         tileSprite.position.x = (i % config.map.chunk.size) * config.map.chunk.tile.size;
         tileSprite.position.y = Math.floor(i / config.map.chunk.size) * config.map.chunk.tile.size;
@@ -30,4 +30,4 @@ Chunk.prototype.createTiles = function() {
     });
 };
 
-module.exports = SpriteLoader;
+module.exports = Chunk;

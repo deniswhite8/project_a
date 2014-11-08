@@ -6,5 +6,9 @@
 	    "input": {
 	        "frequencySend": 0.1
 	    }
+	},
+	"tileset": {
+		"path": "tileset/",
+		"extension": "png"
 	}
 }

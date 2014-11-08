@@ -73,16 +73,28 @@ World.prototype.onNewChunk = function(data, socket) {
     var chunk = new Chunk(data);
     self._chunks[data.id] = chunk;
     self._graphics.addChunk(chunk);
+    
+    if (!data.avatars) return;
+    data.avatars.forEach(function (avatarData) {
+        var avatar = self.createAvatar(avatarData);
+        self._graphics.addAvatar(avatar);
+    });
 };
 
-World.prototype.onRemoveChunk = function(id, socket) {
-    logger.info('Remove chunk event, id = ');
-    logger.log(id);
+World.prototype.onRemoveChunk = function(data, socket) {
+    logger.info('Remove chunk event, data = ');
+    logger.log(data);
     
-    if (!id || !this._chunks[id]) return;
+    if (!data || !data.id || !this._chunks[data.id]) return;
     
-    self._graphics.removeAvatar(self._chunks[id]);
-    delete self._chunks[id];
+    self._graphics.removeAvatar(self._chunks[data.id]);
+    delete self._chunks[data.id];
+    
+    if (!data.avatars) return;
+    data.avatars.forEach(function (avatarData) {
+        self.removeAvatar(avatarData.id);
+        self._graphics.removeAvatar(avatarData.id);
+    });
 };
 
 World.prototype.onNewAvatar = function(data, socket) {
@@ -93,12 +105,12 @@ World.prototype.onNewAvatar = function(data, socket) {
     self._graphics.addAvatar(avatar);
 };
 
-World.prototype.onRemoveAvatar = function(id, socket) {
-    logger.info('Remove avatar event, id = ');
-    logger.log(id);
+World.prototype.onRemoveAvatar = function(data, socket) {
+    logger.info('Remove avatar event, data = ');
+    logger.log(data);
     
-    self.removeAvatar(id);
-    self._graphics.removeAvatar(id);
+    self.removeAvatar(data.id);
+    self._graphics.removeAvatar(data.id);
 };
 
 World.prototype.onSetControlAvatar = function(avatarId, socket) {
@@ -135,8 +147,9 @@ World.prototype.createAvatar = function(params) {
     if (!avatarClass || !avatarConfig) return;
     
     var avatar = new avatarClass();
+    avatar._init(params, avatarConfig);
     
-    avatar.init(params, avatarConfig);
+    return avatar;
 };
 
 World.prototype._step = function() {

@@ -58,11 +58,11 @@ Chunk.transferAvatar = function(avatar) {
 
 	Chunk.symmetricDifferenceVicinityForeach(oldChunk, newChunk,
 		function (chunk) {
-			chunk.broadcast(config.avatar.removeAvatar, avatar.removeMessage(), avatar);
+			chunk.broadcast(config.messages.removeAvatar, avatar.removeMessage(), avatar);
 			chunk.sendData(avatar, 'remove');
 		},
 		function (chunk) {
-			chunk.broadcast(config.avatar.newAvatar, avatar.newMessage(), avatar);
+			chunk.broadcast(config.messages.newAvatar, avatar.newMessage(), avatar);
 			chunk.sendData(avatar, 'new');
 		}
 	);
