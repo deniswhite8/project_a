@@ -1,7 +1,9 @@
 core & frontend:
-Map class (?)
-multiply-level object Cached
-core -> server, frontend -> client, (server + client) -> core, avatars -> avatars
+ - Map class (?)
+ - multiply-level object Cached
+ - core -> server, frontend -> client, (server + client) -> core, avatars -> avatars
+ - more logs
+ - scale for distances (pixels per meter), one meter - one tile
 
 frontend:
-browserify folder, requred all avatars
+ - browserify folder, requred all avatars

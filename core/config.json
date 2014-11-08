@@ -1,12 +1,5 @@
 {
-	"chunk": {
-		"size": 32,
-		"tile": {
-			"size": 32
-		},
-		"groupRadius": 2
-	},
-	"map": {
+	"map" : {
 		"path": "map/"
 	},
 	"table": {

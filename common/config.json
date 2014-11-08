@@ -1,4 +1,14 @@
 {
+	"map" : {
+		"chunk": {
+			"size": 10,
+			"tile": {
+				"size": 32
+			}
+		},
+		"size": 32,
+		"groupRadius": 2
+	},
     "messages": {
     	"newChunk": "new_tl",
     	"removeChunk": "del_tl",

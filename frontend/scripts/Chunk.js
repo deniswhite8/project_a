@@ -17,13 +17,15 @@ Chunk.prototype.createTiles = function() {
         self = this;
         
     this._rootGraphicsNode = spriteLoader.load();
+    this._rootGraphicsNode.position.x = this.x * config.map.chunk.size * config.map.chunk.tile.size;
+    this._rootGraphicsNode.position.y = this.y * config.map.chunk.size * config.map.chunk.tile.size;
     
     this._tiles.forEach(function(tile, i) {
         if (!tile) return;
         var tileSprite = spriteLoader.load(tile);
             
-        tileSprite.position.x = (i % config.size) * config.chunk.tile.size;
-        tileSprite.position.y = Math.floor(i / config.size) * config.chunk.tile.size;
+        tileSprite.position.x = (i % config.map.chunk.size) * config.map.chunk.tile.size;
+        tileSprite.position.y = Math.floor(i / config.map.chunk.size) * config.map.chunk.tile.size;
         self._rootGraphicsNode.addChild(tileSprite);
     });
 };

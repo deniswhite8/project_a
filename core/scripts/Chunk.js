@@ -1,7 +1,9 @@
-var config = null;
+var config = null,
+	logger = null;
 
 var Chunk = function(x, y, tiles, chunks) {
 	config = global.config;
+	logger = global.logger;
 	
 	this._tiles = tiles;
 	this._avatars = {};
@@ -10,7 +12,11 @@ var Chunk = function(x, y, tiles, chunks) {
 	this.x = x;
 	this.y = y;
 
-	this.id = x + y * config.chunk.size;
+	this.id = x + y * config.map.size;
+	
+	if (!this.x || !this.y || !this.id) {
+		logger.warn('Incorrect chunk position (x = ' + this.x + ', y = ' + this.y + ', id = ' + this.id + ')');
+	}
 };
 
 Chunk.prototype.addAvatar = function(avatar) {
@@ -18,9 +24,10 @@ Chunk.prototype.addAvatar = function(avatar) {
 
 	this._avatars[avatar.id] = avatar;
 	avatar.enable();
+	avatar.chunk = this;
 
 	this.vicinityForeach(function(chunk) {
-		chunk.broadcast(config.avatar.newAvatar, avatar.newMessage(), avatar);
+		chunk.broadcast(config.messages.newAvatar, avatar.newMessage(), avatar);
 		chunk.sendData(avatar, 'new');
 	});
 };
@@ -65,7 +72,7 @@ Chunk.prototype.broadcast = function(name, data, exceptAvatar) {
 	var userId = exceptAvatar.user.id;
 
 	for (var avatarId in this._avatars) {
-		if (typeof avatarId !== 'number') continue;
+		if (!this._avatars.hasOwnProperty(avatarId)) continue;
 		var avatar = this._avatars[avatarId];
 		
 		if (avatar.user.id !== userId) {
@@ -90,7 +97,7 @@ Chunk.prototype.sendData = function(recipientAvatar, type) {
 	}
 	
 	for (var avatarId in this._avatars) {
-		if (typeof avatarId !== 'number') continue;
+		if (!this._avatars.hasOwnProperty(avatarId)) continue;
 		var avatar = this._avatars[avatarId],
 			avatarMsg;
 
@@ -128,11 +135,11 @@ Chunk.symmetricDifferenceVicinityForeach = function(first, second, callbackForFi
 };
 
 Chunk.prototype.vicinityForeach = function(callback) {
-	var groupRadius = config.chunk.groupRadius - 1;
+	var groupRadius = config.map.groupRadius - 1;
 
 	for(var x = this.x - groupRadius; x < this.x + groupRadius; x++)
 		for(var y = this.y - groupRadius; y < this.y + groupRadius; y++) {
-			var id = x + y * config.chunk.size;
+			var id = x + y * config.map.size;
 			if (!this._chunks[id]) continue;
 			callback(this._chunks[id]);
 		}
@@ -140,7 +147,7 @@ Chunk.prototype.vicinityForeach = function(callback) {
 
 Chunk.prototype._update = function(callback) {
 	for (var avatarId in this._avatars) {
-		if (typeof avatarId !== 'number') continue;
+		if (!this._avatars.hasOwnProperty(avatarId)) continue;
 		var avatar = this._avatars[avatarId];
 		
 		if (avatar._update()) {

@@ -1,10 +1,9 @@
 var Table = require('./Table.js'),
-	Cached = require('../../common/Cached.js'),
 	config = null;
 
 var Avatar = function() {
-	this._cached = new Cached();
 	this.user = null;
+	this.chunk = null;
 	
 	config = global.config;
 };
@@ -18,7 +17,7 @@ Avatar.prototype._prepareMessage = function(messageType) {
 		response[name] = self[name];
 	});
 
-	return this._cached.clean(response, messageType);
+	return response;
 };
 
 Avatar.prototype.newMessage = function() {
@@ -40,10 +39,10 @@ Avatar.prototype.save = function() {
 };
 
 Avatar.prototype.calcChunkIdByPosition = function() {
-	var x = Math.floor(this.x / config.chunk.tile.size / config.chunk.size),
-		y = Math.floor(this.y / config.chunk.tile.size / config.chunk.size);
+	var x = Math.floor(this.x / config.map.chunk.tile.size / config.map.chunk.size),
+		y = Math.floor(this.y / config.map.chunk.tile.size / config.map.chunk.size);
 
-	var chunkId = x + y * config.chunk.size;
+	var chunkId = x + y * config.map.size;
 	return chunkId;
 };
 
@@ -84,8 +83,7 @@ Avatar.prototype._update = function() {
 };
 
 Avatar.prototype._input = function(input) {
-	var inputData = this._cached.clean(input, 'input');
-	if (inputData && this.input) this.input(inputData);
+	if (input && this.input) this.input(input);
 };
 
 Avatar.prototype.disable = function() {

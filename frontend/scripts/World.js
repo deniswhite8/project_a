@@ -8,17 +8,27 @@ var AvatarLoader = require('./AvatarLoader.js'),
     Chunk = require('./Chunk.js'),
     localConfig = require('../config.json'),
 	globalConfig = require('../../common/config.json'),
-    config = null;
+	Logger = require('../../common/Logger.js'),
+	logger = null,
+    config = null,
+    self = null;
 
 var World = function() {
     config = window.config = globalConfig.extend(localConfig);
+    logger = window.loger = new Logger();
+    self = this;
+    
+    logger.info('Creating world');
     
     this._avatars = [];
     this._frameCounter = 0;
     this._stats = new Stats();
+    logger.info('Init graphics module');
     this._graphics = new Graphics();
     this._controlAvatar = null;
+    logger.info('Init input module');
     this._input = new Input();
+    logger.info('Init network module');
     this._network = new Network();
     this._chunks = [];
     
@@ -27,10 +37,15 @@ var World = function() {
 };
 
 World.prototype.start = function() {
+    logger.info('Starting world');
+    
+    logger.info('Network connect');
     this._network.connect();
     this._stats.setMode(2);
+    logger.info('Graphics init');
     this._graphics.init('centerDiv', 640, 480, this._stats);
-    this._input.init(this._graphics.getViewElement());
+    logger.info('Input init');
+    this._input.init(this._graphics.getViewElement(), this._avatars);
     
     this._network.on(config.messages.newChunk, this.onNewChunk);
     this._network.on(config.messages.removeChunk, this.onRemoveChunk);
@@ -43,40 +58,54 @@ World.prototype.start = function() {
         passwd: 'qwe'
     });
     
+    logger.info('Start update world main loop');
     this._step();
 };
 
 
-
-
 World.prototype.onNewChunk = function(data, socket) {
+    logger.info('New chunk event, data = ');
+    logger.log(data);
+    
     if (!data || !data.id) return;
-    if (this._chunks[data.id]) this.onRemoveChunk();
+    if (self._chunks[data.id]) self.onRemoveChunk();
     
     var chunk = new Chunk(data);
-    this._chunks[data.id] = chunk;
-    this._graphics.addChunk(chunk);
+    self._chunks[data.id] = chunk;
+    self._graphics.addChunk(chunk);
 };
 
 World.prototype.onRemoveChunk = function(id, socket) {
+    logger.info('Remove chunk event, id = ');
+    logger.log(id);
+    
     if (!id || !this._chunks[id]) return;
     
-    this._graphics.removeAvatar(this._chunks[id]);
-    delete this._chunks[id];
+    self._graphics.removeAvatar(self._chunks[id]);
+    delete self._chunks[id];
 };
 
 World.prototype.onNewAvatar = function(data, socket) {
-    var avatar = this.createAvatar(data);
-    this._graphics.addAvatar(avatar);
+    logger.info('New avatar event, data = ');
+    logger.log(data);
+    
+    var avatar = self.createAvatar(data);
+    self._graphics.addAvatar(avatar);
 };
 
 World.prototype.onRemoveAvatar = function(id, socket) {
-    this.removeAvatar(id);
-    this._graphics.removeAvatar(id);
+    logger.info('Remove avatar event, id = ');
+    logger.log(id);
+    
+    self.removeAvatar(id);
+    self._graphics.removeAvatar(id);
 };
 
 World.prototype.onSetControlAvatar = function(avatarId, socket) {
-    this._controlAvatar = this.getAvatar(avatarId);
+    logger.info('Set control avatar event, id = ');
+    logger.log(avatarId);
+    
+    self._controlAvatar = self.getAvatar(avatarId);
 };
 
 

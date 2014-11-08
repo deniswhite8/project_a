@@ -23,18 +23,18 @@ var World = function() {
 
 	this._chunks = [];
 	this._avatars = {};
-	logger.info('Creating world ...');
+	logger.info('Creating world');
 	
-	logger.info('Init physics module ...');
+	logger.info('Init physics module');
 	this._physics = new Physics();
 	
-	logger.info('Init page app ...');
+	logger.info('Init page app');
 	this._pageApp = new PageApp();
 	
-	logger.info('Init connect ...');
+	logger.info('Init connect');
 	this._connect = new Connect(this._pageApp.getApp());
 	
-	logger.info('Init newtwork module ...');
+	logger.info('Init newtwork module');
 	this._networkEvent = new NetworkEvent(this._connect.getHttpServer());
 	
 	logger.info('World was created');
@@ -42,21 +42,21 @@ var World = function() {
 };
 
 World.prototype.start = function() {
-	logger.info('Starting world ...');
-	logger.info('Starting physics ...');
+	logger.info('Starting world');
+	logger.info('Starting physics');
 	this._physics.init();
 	
-	logger.info('Load world map ...');
+	logger.info('Load world map');
 	this.loadMap();
 
 	this._networkEvent.on(config.messages.userLogin, this.onUserLogin);
 	this._networkEvent.on(config.messages.userInput, this.onUserInput);
-	this._networkEvent.on('disconnect', this.onUserDisconect);
+	this._networkEvent.on('disconnect', this.onUserDisconnect);
 
-	logger.info('Starting network listening (on ' + this._connect.getPort() + ' port) ...');
+	logger.info('Starting network listening (on ' + this._connect.getPort() + ' port)');
 	this._connect.listen();
 
-	logger.info('Starting network event listening ...');
+	logger.info('Starting network event listening');
 	this._networkEvent.listen();
 
 	logger.info('Start update world main loop');
@@ -67,7 +67,7 @@ World.prototype.onUserLogin = function(data, socket) {
 	var user = new User();
 
 	if (user.login(data.login, data.passwd)) {
-		logger.info('User login: ' + user.getLogin());
+		logger.info('User connect: ' + user.getLogin());
 
 		user.setSocket(socket);
 		var avatarId = user.getAvatarId();
@@ -75,7 +75,7 @@ World.prototype.onUserLogin = function(data, socket) {
 		var avatar = self.loadAvatar(avatarId);
 		avatar.user = user;
 		self.addAvatar(avatar);
-		user.send(config.messages.controlAvatar, avatarId);
+		user.send(config.messages.setControlAvatar, avatarId);
 	}
 };
 
@@ -88,16 +88,20 @@ World.prototype.onUserInput = function(data, socket) {
 		
 	if (!avatar) return;
 	
+	data = user.restoreInput(data);
 	avatar._input(data);
 };
 
-World.prototype.onUserDisconect = function(data, socket) {
+World.prototype.onUserDisconnect = function(data, socket) {
 	var user = new User();
 	user = user.getBySocket(socket);
 	
-	if (!user.id) return;
+	if (!user || !user.id) return;
 	
-	logger.info('User disconect: ' + user.getLogin());
+	logger.info('User disconnect: ' + user.getLogin());
+	
+	var userAvatar = self.getAvatar(user.getAvatarId());
+	self.removeAvatar(userAvatar);
 };
 
 World.prototype.loadMap = function() {

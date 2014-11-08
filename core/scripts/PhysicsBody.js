@@ -11,7 +11,9 @@ PhysicsBody.prototype._create = function(params) {
 	body.setPos(cp.v(params.x, params.y));
 
 	this._isRotated = params.isRotated;
+	this._angle = params.angle;
 	if (this._isRotated) body.setAngle(params.angle);
+	this._dir = cp.vzero;
 
 	this._shape = new cp.BoxShape(body, params.width, params.height);
 
@@ -31,12 +33,15 @@ PhysicsBody.prototype._create = function(params) {
 	}
 };
 
-PhysicsBody.prototype._update = function() {
+PhysicsBody.prototype.update = function() {
 	this._controlBody.setPos(cp.v.add(cp.v.sub(this._body.getPos(), this._body.getVel()), this._dir));
     if (this._isRotated) this._controlBody.setAngle(-this._body.getAngVel() - this._angle);
 
     var vel = this._body.getVel();
-    if(vel.x * this._oldVel.x <= 0 && vel.y * this._oldVel.y <= 0 && vel.x + this._oldVel.x + vel.y + this._oldVel.y !== 0) {
+    if(this._oldVel &&
+    	vel.x * this._oldVel.x <= 0 && vel.y * this._oldVel.y <= 0 &&
+    	vel.x + this._oldVel.x + vel.y + this._oldVel.y !== 0) {
+    		
     	this._body.setVel(cp.vzero);
     }
     this._oldVel = vel;

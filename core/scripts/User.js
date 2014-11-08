@@ -1,4 +1,5 @@
 var Table = require('./Table.js'),
+	Cached = require('../../common/Cached.js'),
 	config = null;
 
 var User = function() {
@@ -9,6 +10,7 @@ var User = function() {
 	this._socket = null;
 	
 	config = global.config;
+	this._cached = new Cached();
 };
 
 User.userBySocketId = {};
@@ -45,8 +47,16 @@ User.prototype.logout = function() {
 };
 
 User.prototype.send = function(name, data) {
-	if (!this._socket || !name || !data || !Object.keys(data).length) return;
+	data = this._cached.clean(data, name);
+	
+	if (!this._socket || !name || data === null || data === undefined ||
+		(typeof data == 'object' && !Object.keys(data).length)) return;
+
 	this._socket.emit(name, data);
+};
+
+User.prototype.restoreInput = function(inputData) {
+	return this._cached.restore(inputData, 'inputData');	
 };
 
 User.prototype.getAvatarId = function() {
