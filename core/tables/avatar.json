@@ -1,5 +1,5 @@
 {
     "data": [
-        {"id": 1, "type": "Panzer", "x": 400, "y": 400, "angle": 0}
+        {"id": 1, "type": "Panzer", "x": 400, "y": 400, "angle": 1, "turretAngle": 0.5, "health": 0.5}
     ]
 }

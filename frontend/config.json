@@ -7,8 +7,16 @@
 	        "frequencySend": 0.1
 	    }
 	},
-	"tileset": {
-		"path": "tileset/",
-		"extension": "png"
+	"map": {
+		"tileset": {
+			"path": "tileset/",
+			"extension": "png"
+		}
+	},
+	"avatar": {
+		"path": "avatars/",
+		"sprite": {
+			"path": "img/",
+		}
 	}
 }

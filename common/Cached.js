@@ -3,38 +3,44 @@ var Cached = function() {
 	this._dirtyData = {};
 };
 
+Cached.prototype._difference = function(cleanObject, dirtyObject) {
+    var key, keyDifference, differenceObject = {};
+    
+    for (key in cleanObject) {
+        if (!cleanObject.hasOwnProperty(key)) {
+        } else if (typeof cleanObject[key] != 'object' || typeof dirtyObject[key] != 'object') {
+            if (!(key in dirtyObject) || cleanObject[key] !== dirtyObject[key]) {
+                differenceObject[key] = dirtyObject[key];
+            }
+        } else if (keyDifference = this._difference(cleanObject[key], dirtyObject[key])) {
+            differenceObject[key] = keyDifference;
+        }
+    }
+    for (key in dirtyObject) {
+        if (dirtyObject.hasOwnProperty(key) && !(key in cleanObject)) {
+            differenceObject[key] = dirtyObject[key];
+        }
+    }
+
+    return differenceObject;
+};
+
 Cached.prototype.clean = function(data, name) {
 	if (!data || !name) return null;
+	if (typeof data != 'object') return data;
 	if (!this._cleanData[name]) this._cleanData[name] = {};
-
-	var result = {};
-
-	for (var i in data) {
-		if (data[i] !== this._cleanData[name][i]) {
-			this._cleanData[name][i] = data[i];
-			result[i] = data[i];
-		}
-	}
 	
-	for (var i in this._cleanData[name]) {
-		if (data[i] === undefined) {
-			delete this._cleanData[name][i];
-			result[i] = undefined;
-		}
-	}
-
-	if (!Object.keys(result).length) result = null;
-
-	return result;
+	this._cleanData[name] = this._difference(this._cleanData[name], data);
+	return this._cleanData[name];
 };
+
 
 Cached.prototype.restore = function(data, name) {
 	if (!name) return null;
+	if (typeof data != 'object') return data;
 	if (!this._dirtyData[name]) this._dirtyData[name] = {};
 	
-	for (var i in data) {
-		this._dirtyData[name][i] = data[i];
-	}
+	this._dirtyData[name] = data.extend(this._dirtyData[name]);
 	
 	return this._dirtyData[name];
 };

@@ -22,7 +22,7 @@ Chunk.prototype._createTiles = function() {
     
     this._tiles.forEach(function(tile, i) {
         if (!tile) return;
-        var tileSprite = spriteLoader.load(config.tileset.path + '/' + tile + '.' + config.tileset.extension);
+        var tileSprite = spriteLoader.load(config.map.tileset.path + '/' + tile + '.' + config.map.tileset.extension);
             
         tileSprite.position.x = (i % config.map.chunk.size) * config.map.chunk.tile.size;
         tileSprite.position.y = Math.floor(i / config.map.chunk.size) * config.map.chunk.tile.size;

@@ -4,16 +4,17 @@ var Avatar = function() {
 	this.rootNode = null;
 };
 
-Avatar.prototype._createRootNode = function(config) {
+Avatar.prototype._createRootNode = function(config, params) {
 	var rootNodeName = Object.keys(config)[0],
 		data = config[rootNodeName];
 	
-	this.rootNode = new AvatarNode(rootNodeName, data);
+	data.name = rootNodeName;
+	this.rootNode = new AvatarNode(data, params);
 	this[rootNodeName] = this.rootNode;
 };
 
 Avatar.prototype._init = function(params, config) {
-	this._createRootNode(config);
+	this._createRootNode(config, params);
 	this.rootNode.updateValues(params);
 
 	if (this.init) this.init(params);

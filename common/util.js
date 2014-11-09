@@ -2,6 +2,8 @@ Object.prototype.extend = function(source) {
     var target = this;
     
     for (var prop in source) {
+        if (!source.hasOwnProperty(prop)) continue;
+        
         if (typeof source[prop] === 'object') {
             if (typeof target[prop] !== 'object') {
                 target[prop] = {};

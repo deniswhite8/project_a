@@ -47,7 +47,7 @@ User.prototype.logout = function() {
 };
 
 User.prototype.send = function(name, data) {
-	data = this._cached.clean(data, name);
+	data = this._cached.clean(data, name + 'Message');
 	
 	if (!this._socket || !name || data === null || data === undefined ||
 		(typeof data == 'object' && !Object.keys(data).length)) return;
@@ -56,7 +56,7 @@ User.prototype.send = function(name, data) {
 };
 
 User.prototype.restoreInput = function(inputData) {
-	return this._cached.restore(inputData, 'inputData');	
+	return this._cached.restore(inputData, 'cachedInputData');	
 };
 
 User.prototype.getAvatarId = function() {
