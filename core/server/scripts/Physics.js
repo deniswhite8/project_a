@@ -9,7 +9,7 @@ var Physics = function() {
 
 Physics.prototype.init = function() {
 	this._space = new cp.Space();
-	this._space.iterations = config.physics.iterations;
+	this._space.iterations = config.physics.iterationsPerUpdate;
 };
 
 Physics.prototype.addBody = function(body) {

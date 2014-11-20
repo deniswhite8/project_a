@@ -4,6 +4,7 @@ var Table = require('./Table.js'),
 var Avatar = function() {
 	this.user = null;
 	this.chunk = null;
+	this.input = {};
 	
 	config = global.config;
 };
@@ -52,7 +53,7 @@ Avatar.prototype._init = function(params, physics) {
 	}
 
 	this._physics = physics;
-	this._avatarConfig = require('../' + config.avatar.path + '/' + this.type + '/config.json');
+	this._avatarConfig = require('../../../' + config.avatar.path + '/' + this.type + '/server/config.json');
 	var physicsConfig = this._avatarConfig.physics;
 
 	if (physicsConfig) {
@@ -82,8 +83,8 @@ Avatar.prototype._update = function() {
 	}
 };
 
-Avatar.prototype._input = function(input) {
-	if (input && this.input) this.input(input);
+Avatar.prototype._setInput = function(input) {
+	this.input = input;
 };
 
 Avatar.prototype.disable = function() {

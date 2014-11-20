@@ -9,14 +9,13 @@
 	},
 	"map": {
 		"tileset": {
-			"path": "tileset/",
 			"extension": "png"
 		}
 	},
 	"avatar": {
 		"path": "avatars/",
 		"sprite": {
-			"path": "img/",
+			"path": "media/",
 		}
 	}
 }

@@ -1,0 +1,30 @@
+{
+	"map" : {
+		"path": "map/"
+	},
+	"table": {
+		"user": "tables/user.json",
+		"avatar": "tables/avatar.json"
+	},
+	"avatar": {
+		"path": "avatars/"
+	},
+	"physics": {
+		"iterationsPerUpdate": 10
+	},
+	"update": {
+		"iterationsPerSecond": 10
+	},
+	"network": {
+    	"port": 8080
+    },
+    "frontend": {
+    	"routers": [
+    		{"query": "/", "file":"index.html", "root": "core/client/"},
+    		{"query": "/min.js", "file":"min.js", "root": "core/client/"},
+    		{"query": "/img/logo", "root": "core/client/img/logo"},
+    		{"query": "/tileset", "root": "map/tileset"},
+    		{"query": "/avatars/:avatar/:img", "file":"/:avatar/media/:img", "root": "avatars/"}
+    	]
+    }
+}

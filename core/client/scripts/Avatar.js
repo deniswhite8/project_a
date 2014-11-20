@@ -14,6 +14,9 @@ Avatar.prototype._createRootNode = function(config, params) {
 };
 
 Avatar.prototype._init = function(params, config) {
+	this.id = params.id;
+	this.type = params.id;
+	
 	this._createRootNode(config, params);
 	this.rootNode.updateValues(params);
 
@@ -25,9 +28,7 @@ Avatar.prototype._init = function(params, config) {
 
 Avatar.prototype._update = function(params) {
 	this.rootNode.updateValues(params);
-	
 	if (this.update) this.update(params);
-	
 	this.rootNode.updateSprite();
 };
 

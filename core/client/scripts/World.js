@@ -9,6 +9,7 @@ var AvatarLoader = require('./AvatarLoader.js'),
     localConfig = require('../config.json'),
 	globalConfig = require('../../common/config.json'),
 	Logger = require('../../common/Logger.js'),
+	Cached = require('../../common/Cached.js'),
 	logger = null,
     config = null,
     self = null;
@@ -31,6 +32,7 @@ var World = function() {
     logger.info('Init network module');
     this._network = new Network();
     this._chunks = [];
+    this._cached = new Cached();
     
     this._frameFrequencyInputSend = Math.floor(config.control.input.frequencySend * 60);
     if (this._frameFrequencyInputSend === 0) this._frameFrequencyInputSend = 1;
@@ -52,6 +54,7 @@ World.prototype.start = function() {
     this._network.on(config.messages.newAvatar, this.onNewAvatar);
     this._network.on(config.messages.removeAvatar, this.onRemoveAvatar);
     this._network.on(config.messages.setControlAvatar, this.onSetControlAvatar);
+    this._network.on(config.messages.updateAvatar, this.onUpdateAvatar);
     
     this._network.send(config.messages.userLogin, {
         login: 'denis',
@@ -62,6 +65,15 @@ World.prototype.start = function() {
     this._step();
 };
 
+World.prototype.onUpdateAvatar = function(data, socket) {
+    if (!data || !data.id) return;
+    
+    data = self._cached.restore(data, 'avatarUpdParams_' + data.id);
+    var avatar = self.getAvatar(data.id);
+    if (!avatar) return;
+    
+    avatar._update(data);
+};
 
 World.prototype.onNewChunk = function(data, socket) {
     logger.info('New chunk event, data = ');
@@ -77,7 +89,7 @@ World.prototype.onNewChunk = function(data, socket) {
     if (!data.avatars) return;
     data.avatars.forEach(function (avatarData) {
         var avatar = self.createAvatar(avatarData);
-        self._graphics.addAvatar(avatar);
+        self.addAvatar(avatar);
     });
 };
 
@@ -87,13 +99,13 @@ World.prototype.onRemoveChunk = function(data, socket) {
     
     if (!data || !data.id || !this._chunks[data.id]) return;
     
-    self._graphics.removeAvatar(self._chunks[data.id]);
+    self._graphics.removeChunk(self._chunks[data.id]);
     delete self._chunks[data.id];
     
     if (!data.avatars) return;
     data.avatars.forEach(function (avatarData) {
-        self.removeAvatar(avatarData.id);
-        self._graphics.removeAvatar(avatarData.id);
+        var avatar = self.getAvatar(avatarData.id);
+        self.removeAvatar(avatar);
     });
 };
 
@@ -102,15 +114,15 @@ World.prototype.onNewAvatar = function(data, socket) {
     logger.log(data);
     
     var avatar = self.createAvatar(data);
-    self._graphics.addAvatar(avatar);
+    self.addAvatar(avatar);
 };
 
 World.prototype.onRemoveAvatar = function(data, socket) {
     logger.info('Remove avatar event, data = ');
     logger.log(data);
     
-    self.removeAvatar(data.id);
-    self._graphics.removeAvatar(data.id);
+    var avatar = self.getAvatar(data.id);
+    self.removeAvatar(avatar);
 };
 
 World.prototype.onSetControlAvatar = function(avatarId, socket) {
@@ -128,10 +140,18 @@ World.prototype.getAvatar = function(id) {
     return this._avatars[id];  
 };
 
-World.prototype.removeAvatar = function(id) {
-    if (!id) return;
+World.prototype.removeAvatar = function(avatar) {
+    if (!avatar || !avatar.id) return;
     
-    delete this._avatars[id];  
+    this._graphics.removeAvatar(avatar.id);
+    delete this._avatars[avatar.id];  
+};
+
+World.prototype.addAvatar = function(avatar) {
+    if (!avatar || !avatar.id) return;
+    
+    this._avatars[avatar.id] = avatar;
+    this._graphics.addAvatar(avatar);
 };
 
 World.prototype.createAvatar = function(params) {
@@ -153,16 +173,11 @@ World.prototype.createAvatar = function(params) {
 };
 
 World.prototype._step = function() {
-    var self = this;
+    self._stats.begin();
+    self._updateFunction();
+    self._stats.end();
     
-    window.requestAnimationFrame(function() {
-        self._stats.begin();
-        
-        self._updateFunction();
-        
-        self._step();
-        self._stats.end();
-    });
+    window.requestAnimationFrame(self._step);
 };
 
 
@@ -171,7 +186,7 @@ World.prototype._updateFunction = function() {
     
     if(this._frameCounter % this._frameFrequencyInputSend) {
 		var inputData = this._input.getInputData();
-		if (inputData) this._network.send(config.messages.userInput, inputData);
+		if (!inputData.isEmpty()) this._network.send(config.messages.userInput, inputData);
 	}
 
 	if (this._controlAvatar) {

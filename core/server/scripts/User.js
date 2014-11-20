@@ -46,17 +46,19 @@ User.prototype.logout = function() {
 	delete User.userBySocketId[socket.id];	
 };
 
-User.prototype.send = function(name, data) {
-	data = this._cached.clean(data, name + 'Message');
-	
+User.prototype.cachingData = function(data, name) {
+	return this._cached.clean(data, name);
+};
+
+User.prototype.send = function(name, data)  {
 	if (!this._socket || !name || data === null || data === undefined ||
-		(typeof data == 'object' && !Object.keys(data).length)) return;
+		(typeof data == 'object' && data.isEmpty())) return;
 
 	this._socket.emit(name, data);
 };
 
 User.prototype.restoreInput = function(inputData) {
-	return this._cached.restore(inputData, 'cachedInputData');	
+	return this._cached.restore(inputData, 'cachedInputData_user' + this.id);	
 };
 
 User.prototype.getAvatarId = function() {

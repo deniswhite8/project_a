@@ -4,8 +4,8 @@ Object.prototype.extend = function(source) {
     for (var prop in source) {
         if (!source.hasOwnProperty(prop)) continue;
         
-        if (typeof source[prop] === 'object') {
-            if (typeof target[prop] !== 'object') {
+        if (typeof source[prop] === 'object' && source[prop] !== null) {
+            if (typeof target[prop] !== 'object' || target[prop] === null) {
                 target[prop] = {};
             }
             target[prop].extend(source[prop]);
@@ -22,4 +22,8 @@ Object.prototype.clone = function() {
     cloneObject.extend(this);
     
     return cloneObject;
+};
+
+Object.prototype.isEmpty = function() {
+    return !Object.keys(this).length;
 };

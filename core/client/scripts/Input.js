@@ -3,6 +3,7 @@ var Cached = require('../../common/Cached.js');
 var Input = function() {
     this._dx = 0;
     this._dy = 0;
+    this.mouseAngle = 0;
     this._pressedKeys = [];
     this._cached = new Cached();
 };
@@ -65,7 +66,7 @@ Input.prototype.init = function (viewElement, avatars) {
 Input.prototype.keyIsPressed = function(keyCode) {
 	if (typeof keyCode == 'string')
 		keyCode = keyCode.toUpperCase().charCodeAt(0);
-	return this._pressedKeys[keyCode];
+	return !!this._pressedKeys[keyCode];
 };
 
 Input.prototype.getInputData = function() {

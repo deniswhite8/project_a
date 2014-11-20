@@ -60,7 +60,7 @@ World.prototype.start = function() {
 	this._networkEvent.listen();
 
 	logger.info('Start update world main loop');
-	setInterval(this._update, config.physics.iterations);
+	setInterval(this._update, 1000 / config.update.iterationsPerSecond);
 };
 
 World.prototype.onUserLogin = function(data, socket) {
@@ -89,7 +89,7 @@ World.prototype.onUserInput = function(data, socket) {
 	if (!avatar) return;
 	
 	data = user.restoreInput(data);
-	avatar._input(data);
+	avatar._setInput(data);
 };
 
 World.prototype.onUserDisconnect = function(data, socket) {
@@ -100,6 +100,8 @@ World.prototype.onUserDisconnect = function(data, socket) {
 	
 	logger.info('User disconnect: ' + user.getLogin());
 	
+	user.logout();
+	
 	var userAvatar = self.getAvatar(user.getAvatarId());
 	self.removeAvatar(userAvatar);
 };
@@ -107,8 +109,11 @@ World.prototype.onUserDisconnect = function(data, socket) {
 World.prototype.loadMap = function() {
 	var self = this;
 
-	fs.readdirSync(__dirname + '/../' + config.map.path).forEach(function(fileName) {
-		var chunkData = require('./../' + config.map.path + "/" + fileName),
+	fs.readdirSync(__dirname + '/../../../' + config.map.path).forEach(function(fileName) {
+		var fullFileName = __dirname + '/../../../' + config.map.path + "/" + fileName;
+		if (fs.lstatSync(fullFileName).isDirectory()) return;
+		
+		var chunkData = require(fullFileName),
 			chunk = new Chunk(chunkData.x, chunkData.y, chunkData.tiles, self._chunks);
 			
 		self._chunks[chunk.id] = chunk;
@@ -127,6 +132,8 @@ World.prototype.addAvatar = function(avatar) {
 
 World.prototype.removeAvatar = function(avatar) {
 	if (!avatar || !avatar.id) return;
+
+	avatar.save();
 
 	var chunk = this._chunks[avatar.calcChunkIdByPosition()];
 	if (chunk)
@@ -151,7 +158,7 @@ World.prototype.loadAvatar = function(id) {
 
 	var row = rows[0];
 
-	var avatarClass = require('../' + config.avatar.path + '/' + row.type + '/' + row.type + '.js'),
+	var avatarClass = require('../../../' + config.avatar.path + '/' + row.type + '/server/' + row.type + '.js'),
 		avatar = new avatarClass();
 
 	avatar._init(row, this._physics);

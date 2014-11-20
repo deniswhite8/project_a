@@ -44,7 +44,7 @@ Chunk.prototype.removeAvatar = function(avatar) {
 	});
 };
 
-Chunk.transferAvatar = function(avatar) {
+Chunk.prototype.transferAvatar = function(avatar) {
 	if (!avatar || !avatar.id) return;
 
 	var oldChunk = avatar.chunk,
@@ -56,7 +56,7 @@ Chunk.transferAvatar = function(avatar) {
 	delete oldChunk._avatars[avatar.id];
 	newChunk._avatars[avatar.id] = avatar;
 
-	Chunk.symmetricDifferenceVicinityForeach(oldChunk, newChunk,
+	this.symmetricDifferenceVicinityForeach(oldChunk, newChunk,
 		function (chunk) {
 			chunk.broadcast(config.messages.removeAvatar, avatar.removeMessage(), avatar);
 			chunk.sendData(avatar, 'remove');
@@ -69,7 +69,8 @@ Chunk.transferAvatar = function(avatar) {
 };
 
 Chunk.prototype.broadcast = function(name, data, exceptAvatar) {
-	var userId = exceptAvatar.user.id;
+	var userId = -1;
+	if (exceptAvatar) userId = exceptAvatar.user.id;
 
 	for (var avatarId in this._avatars) {
 		if (!this._avatars.hasOwnProperty(avatarId)) continue;
@@ -79,6 +80,23 @@ Chunk.prototype.broadcast = function(name, data, exceptAvatar) {
 			avatar.user.send(name, data);
 		}
 	}
+};
+
+Chunk.prototype.broadcastAvatarUpdate = function(avatar) {
+	var avatarUpdateData = avatar.updMessage(),
+		updateAvatarId = avatarUpdateData.id;
+		
+	this.vicinityForeach(function(chunk) {
+		for (var avatarId in chunk._avatars) {
+			if (!chunk._avatars.hasOwnProperty(avatarId)) continue;
+			var avatar = chunk._avatars[avatarId];
+			var	user = avatar.user;
+			var	data = user.cachingData(avatarUpdateData, 'avatarUpdateData_avatar' + updateAvatarId);
+				
+			if (!data.isEmpty()) data.id = updateAvatarId;
+			user.send(config.messages.updateAvatar, data);
+		}
+	});
 };
 
 Chunk.prototype.sendData = function(recipientAvatar, type) {
@@ -110,7 +128,7 @@ Chunk.prototype.sendData = function(recipientAvatar, type) {
 	recipientAvatar.user.send(msgName, data);
 };
 
-Chunk.symmetricDifferenceVicinityForeach = function(first, second, callbackForFirst, callbackForSecond) {
+Chunk.prototype.symmetricDifferenceVicinityForeach = function(first, second, callbackForFirst, callbackForSecond) {
 	var forFirst = [], forSecond = [];
 
 	first.vicinityForeach(function (chunk) {
@@ -151,7 +169,9 @@ Chunk.prototype._update = function(callback) {
 		var avatar = this._avatars[avatarId];
 		
 		if (avatar._update()) {
-			Chunk.transferAvatar(avatar);
+			this.transferAvatar(avatar);
+		} else {
+			this.broadcastAvatarUpdate(avatar);
 		}
 	}
 };

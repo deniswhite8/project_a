@@ -1,4 +1,4 @@
-var Avatar = require('../../scripts/Avatar.js');
+var Avatar = require('../../../core/server/scripts/Avatar.js');
 
 var Panzer = function () {
 	Avatar.call(this);
@@ -13,12 +13,7 @@ Panzer.prototype.init = function () {
 };
 
 Panzer.prototype.update = function () {
-
+    this.turretAngle = this.input.angle; 
 };
-
-Panzer.prototype.input = function () {
-
-};
-
 
 module.exports = Panzer;
