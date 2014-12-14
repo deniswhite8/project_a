@@ -16,14 +16,13 @@ Table.prototype.fetch = function(condition) {
 	var result = [];
 	this._tableData.forEach(function(row) {
 		var ok = true;
-		for (var name in condition) {
-			if (typeof name !== 'string' || typeof condition === 'object') continue;
-
-			if (row[name] !== condition[name]) {
+		
+		condition.each(function(name, clause){
+			if (row[name] !== clause) {
 				ok = false;
-				break;
+				return true;
 			}
-		}
+		});
 
 		if (ok) result.push(row);
 	});

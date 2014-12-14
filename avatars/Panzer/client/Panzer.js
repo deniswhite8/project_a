@@ -11,8 +11,7 @@ Panzer.prototype.init = function(params) {
 
 Panzer.prototype.update = function(params) {
 	this.body.children.turret.angle *= -1;
-	this.body.children.border.children.line.tint =
-		((0xFF * params.hp) << 8) + ((0xFF * (1-params.hp)) << 16);
+	this.body.children.border.children.line.tint = ((0xFF * params.health) << 8) + ((0xFF * (1-params.health)) << 16);
 };
 
 module.exports = Panzer;

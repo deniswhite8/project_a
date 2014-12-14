@@ -76,7 +76,7 @@ Graphics.prototype.render = function() {
 
 Graphics.prototype._sortZ = function(node) {
 	node.children.sort(function (a, b) {
-		return a._z - b._z;
+		return a.position.z - b.position.z;
 	});
 };
 

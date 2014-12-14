@@ -6,15 +6,12 @@ var Page = function() {
     
     var app = express();
     this._app = app;
-    
-    for (var i in config.frontend.routers) {
-        if (!config.frontend.routers.hasOwnProperty(i)) continue;
-        
-        var router = config.frontend.routers[i];
-            
-        if (router.file) this.addRouter(router.query, router.file, router.root);
-        else this.addDirectory(router.query, router.root);
-    }
+
+    var self = this;
+    config.frontend.routers.each(function(i, router) {
+        if (router.file) self.addRouter(router.query, router.file, router.root);
+        else self.addDirectory(router.query, router.root);
+    });
 };
 
 Page.prototype.addRouter = function(query, file, root) {

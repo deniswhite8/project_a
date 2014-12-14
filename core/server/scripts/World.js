@@ -1,7 +1,7 @@
 require('../../common/util.js');
 
 var Physics = require('./Physics.js'),
-	NetworkEvent = require('./NetworkEvent.js'),
+	Network = require('./Network.js'),
 	User = require('./User.js'),
 	Table = require('./Table.js'),
 	Chunk = require('./Chunk.js'),
@@ -35,7 +35,7 @@ var World = function() {
 	this._connect = new Connect(this._pageApp.getApp());
 	
 	logger.info('Init newtwork module');
-	this._networkEvent = new NetworkEvent(this._connect.getHttpServer());
+	this._network = new Network(this._connect.getHttpServer());
 	
 	logger.info('World was created');
 	self = this;
@@ -49,22 +49,22 @@ World.prototype.start = function() {
 	logger.info('Load world map');
 	this.loadMap();
 
-	this._networkEvent.on(config.messages.userLogin, this.onUserLogin);
-	this._networkEvent.on(config.messages.userInput, this.onUserInput);
-	this._networkEvent.on('disconnect', this.onUserDisconnect);
+	this._network.on(config.network.messages.userLogin, this.onUserLogin);
+	this._network.on(config.network.messages.userInput, this.onUserInput);
+	this._network.on('disconnect', this.onUserDisconnect);
 
 	logger.info('Starting network listening (on ' + this._connect.getPort() + ' port)');
 	this._connect.listen();
 
 	logger.info('Starting network event listening');
-	this._networkEvent.listen();
+	this._network.listen();
 
 	logger.info('Start update world main loop');
 	setInterval(this._update, 1000 / config.update.iterationsPerSecond);
 };
 
 World.prototype.onUserLogin = function(data, socket) {
-	var user = new User();
+	var user = new User(self._network);
 
 	if (user.login(data.login, data.passwd)) {
 		logger.info('User connect: ' + user.getLogin());
@@ -75,7 +75,7 @@ World.prototype.onUserLogin = function(data, socket) {
 		var avatar = self.loadAvatar(avatarId);
 		avatar.user = user;
 		self.addAvatar(avatar);
-		user.send(config.messages.setControlAvatar, avatarId);
+		user.send(config.network.messages.setControlAvatar, avatarId);
 	}
 };
 

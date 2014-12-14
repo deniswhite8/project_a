@@ -18,6 +18,9 @@ Avatar.prototype._prepareMessage = function(messageType) {
 		response[name] = self[name];
 	});
 
+	response.x /= config.map.distance.scale;
+	response.y /= config.map.distance.scale;
+
 	return response;
 };
 

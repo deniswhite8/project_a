@@ -1,8 +1,11 @@
+var Pack = require('../../common/Pack.js');
+
 var config = null;
 
 var Network = function() {
     this._eventCallbacks = [];
     this._socket = null;
+    this._pack = new Pack();
     
     config = window.config;
 };
@@ -15,14 +18,16 @@ Network.prototype.on = function(name, callback) {
     var self = this;
     
     this._socket.on(name, function(data) {
-        callback.call(self, data, this);
+        var decodedData = self._pack.decode(data);
+        callback.call(self, decodedData, this);
     });
 };
 
 Network.prototype.send = function(name, data) {
     if (!this._socket) return;
     
-    this._socket.emit(name, data);
+    var encodedData = this._pack.encode(data);
+    this._socket.emit(name, encodedData);
 };
 
 module.exports = Network;

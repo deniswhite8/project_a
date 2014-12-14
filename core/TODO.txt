@@ -1,15 +1,17 @@
-core & frontend:
- - Map class (add ?)
- - Cached deleted nulls at resore data (fix it ?)
- - more logs (especially warnings for incorrect function arguments)
- - scale for distances (pixels per meter), one meter - one tile
- - https://www.npmjs.org/package/msgpack-js
- - glue all user messages for one update iteration
- - dependency injection (requred('core/client...')) ?
+server & client:
+ - ? Map class (add)
+ - ? Cached deleted nulls at resore data (fix it)
+ - ? more logs (especially warnings for incorrect function arguments)
+ - ? dependency injection (include('core/client/Input'))
+ - ? glue all messages for one user at one update iteration
 
 server:
- - mongo db
- - save avatar/user info into table
+ - ! mongo db
+ - ! save avatar/user info into table
+ - ! avatar distance messages
 
-frontend:
- - browserify folder, requred all avatars
+client:
+ - ! linear interpolation
+ - ! tint bug
+ - ! not always up to date
+ - ! tiles

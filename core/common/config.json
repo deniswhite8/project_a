@@ -1,5 +1,5 @@
 {
-	"map" : {
+	"map": {
 		"chunk": {
 			"size": 10,
 			"tile": {
@@ -8,20 +8,30 @@
 		},
 		"size": 32,
 		"groupRadius": 2,
-		
 		"tileset": {
 			"path": "tileset/"
+		},
+		"distance": {
+			"scale": 100
 		}
 	},
-    "messages": {
-    	"newChunk": "new_tl",
-    	"removeChunk": "del_tl",
-    	"newAvatar": "new_av",
-    	"removeAvatar": "del_av",
-    	"updateAvatar": "upd_av",
-    	"setControlAvatar": "ctrl_av",
-    
-    	"userLogin": "login",
-    	"userInput": "input"
+    "network": {
+    	"messages": {
+	    	"newChunk": "new_tl",
+	    	"removeChunk": "del_tl",
+	    	"newAvatar": "new_av",
+	    	"removeAvatar": "del_av",
+	    	"updateAvatar": "upd_av",
+	    	"setControlAvatar": "ctrl_av",
+	    
+	    	"userLogin": "login",
+	    	"userInput": "input"
+    	},
+    	"cache": {
+    		"enable": true
+    	},
+    	"pack": {
+    		"enable": true
+    	}
     }
 }

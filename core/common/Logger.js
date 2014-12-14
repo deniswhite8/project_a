@@ -1,36 +1,54 @@
-var colors = require('colors/safe');
+var colors = require('colors/safe'),
+    isBrowser = require('./isBrowser.js')
 
 var Logger = function () {
+    this.log = this.info = this.warn = this.error = null;
     
-};
-
-Logger.prototype._isBrowser = function() {
-    try {
-        !!window;
-        return true;
-    } catch (e) {
-        return false;
+    if (isBrowser) {
+        this.log = this._browserLog;
+        this.info = this._browserInfo;
+        this.warn = this._browserWarn;
+        this.error = this._browserError;
+    } else {
+        this.log = this._nodeLog;
+        this.info = this._nodeInfo;
+        this.warn = this._nodeWarn;
+        this.error = this._nodeError;
     }
 };
 
-Logger.prototype.log = function(message) {
-    if (this._isBrowser()) console.log(message);
-    else console.log(message);
+Logger.prototype._browserLog = function(message) {
+    console.log(message.clone());
 };
 
-Logger.prototype.info = function(message) {
-    if (this._isBrowser()) console.info(message);
-    else console.log(colors.blue(message));
+Logger.prototype._browserInfo = function(message) {
+    console.info(message.clone());
 };
 
-Logger.prototype.warn = function(message) {
-    if (this._isBrowser()) console.warn(message);
-    else console.log(colors.yellow(message));
+Logger.prototype._browserWarn = function(message) {
+    console.warn(message.clone());
 };
 
-Logger.prototype.error = function(message) {
-    if (this._isBrowser()) console.error(message);
-    else console.log(colors.red(message));
+Logger.prototype._browserError = function(message) {
+    console.error(message.clone());
+};
+
+
+
+Logger.prototype._nodeLog = function(message) {
+    console.log(message.clone());
+};
+
+Logger.prototype._nodeInfo = function(message) {
+    console.log(colors.blue(message.clone()));
+};
+
+Logger.prototype._nodeWarn = function(message) {
+    console.log(colors.yellow(message.clone()));
+};
+
+Logger.prototype._nodeError = function(message) {
+    console.log(colors.red(message.clone()));
 };
 
 module.exports = Logger;

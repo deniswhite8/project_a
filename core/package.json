@@ -8,6 +8,8 @@
         "browserify": "*",
         "chipmunk": "*",
         "colors": "*",
-        "pixi": "*"
+        "pixi": "*",
+        "msgpack-js": "*",
+        "msgpack-js-browser": "*"
     }
 }

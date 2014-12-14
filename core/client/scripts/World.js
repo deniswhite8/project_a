@@ -16,7 +16,7 @@ var AvatarLoader = require('./AvatarLoader.js'),
 
 var World = function() {
     config = window.config = globalConfig.extend(localConfig);
-    logger = window.loger = new Logger();
+    logger = window.logger = new Logger();
     self = this;
     
     logger.info('Creating world');
@@ -49,14 +49,14 @@ World.prototype.start = function() {
     logger.info('Input init');
     this._input.init(this._graphics.getViewElement(), this._avatars);
     
-    this._network.on(config.messages.newChunk, this.onNewChunk);
-    this._network.on(config.messages.removeChunk, this.onRemoveChunk);
-    this._network.on(config.messages.newAvatar, this.onNewAvatar);
-    this._network.on(config.messages.removeAvatar, this.onRemoveAvatar);
-    this._network.on(config.messages.setControlAvatar, this.onSetControlAvatar);
-    this._network.on(config.messages.updateAvatar, this.onUpdateAvatar);
+    this._network.on(config.network.messages.newChunk, this.onNewChunk);
+    this._network.on(config.network.messages.removeChunk, this.onRemoveChunk);
+    this._network.on(config.network.messages.newAvatar, this.onNewAvatar);
+    this._network.on(config.network.messages.removeAvatar, this.onRemoveAvatar);
+    this._network.on(config.network.messages.setControlAvatar, this.onSetControlAvatar);
+    this._network.on(config.network.messages.updateAvatar, this.onUpdateAvatar);
     
-    this._network.send(config.messages.userLogin, {
+    this._network.send(config.network.messages.userLogin, {
         login: 'denis',
         passwd: 'qwe'
     });
@@ -186,7 +186,7 @@ World.prototype._updateFunction = function() {
     
     if(this._frameCounter % this._frameFrequencyInputSend) {
 		var inputData = this._input.getInputData();
-		if (!inputData.isEmpty()) this._network.send(config.messages.userInput, inputData);
+		if (!inputData.isEmpty()) this._network.send(config.network.messages.userInput, inputData);
 	}
 
 	if (this._controlAvatar) {

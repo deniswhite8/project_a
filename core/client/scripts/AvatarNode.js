@@ -1,10 +1,12 @@
 var SpriteLoader = require('./SpriteLoader.js'),
 	defaultAvatarNode = require('./defaultAvatarNode.json'),
+	Sandbox = require('./Sandbox.js'),
 	config = null;
 
 var AvatarNode = function(confData, params) {
 	config = window.config;
 	
+	this._sandbox = new Sandbox();
 	this._loadValues(this, confData, params);
 	this.children = {};
 	this.parent = null;
@@ -13,28 +15,41 @@ var AvatarNode = function(confData, params) {
 	confData.extend(defaultAvatarNode);
 
 	var childrenConfData = confData.children;
-	delete confData.children;
-	this._confData = confData;
+	this._confData = this._prepareConfig(confData);
 
-	for (var childName in childrenConfData) {
-		if (!childrenConfData.hasOwnProperty(childName)) continue;
-		
-		var childConfData = childrenConfData[childName];
-		childConfData.name = childName;
-		
-		var child = new AvatarNode(childConfData, params);
-		this.children[childName] = child;
-		child.parent = this;
+	var self = this;
+	if (childrenConfData) {
+		childrenConfData.each(function(childName, childConfData) {
+			childConfData.name = childName;
+			
+			var child = new AvatarNode(childConfData, params);
+			self.children[childName] = child;
+			child.parent = self;
+		});
 	}
 };
 
-AvatarNode.prototype._childrenForeach = function(callback) {
-	for (var childName in this.children) {
-		if (!this.children.hasOwnProperty(childName)) continue;
+AvatarNode.prototype._prepareConfig = function(confData) {
+	delete confData.children;
 
-		var child = this.children[childName];
+	var self = this;
+	confData.each(function(prop, value) {
+		if ($.isObject(value)) {
+			self._prepareConfig(value);
+		} else if ($.isString(value) && value.indexOf('@name') != -1) {
+			confData[prop] = value.replace('@name', self.name);
+		} else if ($.isString(value) && value.charAt(0) == '#') {
+			confData[prop] = self._sandbox.getFunction(value.substr(1));
+		}
+	});
+	
+	return confData;
+};
+
+AvatarNode.prototype._childrenForeach = function(callback) {
+	this.children.each(function(childName, child) {
 		callback(child);
-	}
+	});
 };
 
 AvatarNode.prototype.createSprite = function() {
@@ -49,21 +64,19 @@ AvatarNode.prototype.createSprite = function() {
 };
 
 AvatarNode.prototype._loadValues = function(target, source, params) {
-	for (var prop in source) {
-		if (!source.hasOwnProperty(prop) || prop == 'children') continue;
-		var value = source[prop];
+	var self = this;
+	source.each(function(prop, value) {
+		if (prop == 'children') return;
 		
-		if (typeof value == 'object') {
+		if ($.isObject(value)) {
 			if (target[prop] === undefined) target[prop] = {};
-			this._loadValues(target[prop], source[prop], params);
-		} else if (typeof value == 'string' && value.charAt(0) == '$') {
-			target[prop] = params[value.substr(1)];
-		} else if (typeof value == 'string' && value.indexOf('@name') != -1) {
-			target[prop] = value.replace('@name', source.name);
+			self._loadValues(target[prop], source[prop], params);
+		} else if ($.isFunction(value)) {
+			target[prop] = value(params);
 		} else {
 			target[prop] = value;
 		}
-	}
+	});
 };
 
 AvatarNode.prototype.updateValues = function(params) {
@@ -81,6 +94,8 @@ AvatarNode.prototype.updateSprite = function() {
 	this._sprite.rotation = this.angle;
 	this._sprite.anchor.x = this.anchor.x;
 	this._sprite.anchor.y = this.anchor.y;
+	this._sprite.scale.x = this.scale.x;
+	this._sprite.scale.y = this.scale.y;
 	this._sprite.tint = this.tint;
 
 	this._childrenForeach(function(child) {

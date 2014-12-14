@@ -1,6 +1,6 @@
 {
     "network": {
-        "host": "http://localhost",
+        "host": "http://localhost"
     },
 	"control": {
 	    "input": {
@@ -15,7 +15,13 @@
 	"avatar": {
 		"path": "avatars/",
 		"sprite": {
-			"path": "media/",
+			"path": "media/"
+		}
+	},
+	"sandbox": {
+		"bind": {
+			"sqrt": "Math.sqrt",
+			"abs": "Math.abs"
 		}
 	}
 }
