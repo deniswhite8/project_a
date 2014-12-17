@@ -13,5 +13,5 @@
         "y": 1
     },
     "tint": 0xFFFFFF,
-    "img": "@name.png"
+    "img": "@name"
 }

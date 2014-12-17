@@ -43,8 +43,9 @@ Avatar.prototype.save = function() {
 };
 
 Avatar.prototype.calcChunkIdByPosition = function() {
-	var x = Math.floor(this.x / config.map.chunk.tile.size / config.map.chunk.size),
-		y = Math.floor(this.y / config.map.chunk.tile.size / config.map.chunk.size);
+	var chunkSize = config.map.chunk.tile.size * config.map.chunk.size,
+		x = Math.floor(this.x / chunkSize),
+		y = Math.floor(this.y / chunkSize);
 
 	var chunkId = x + y * config.map.size;
 	return chunkId;
@@ -84,6 +85,11 @@ Avatar.prototype._update = function() {
 	if (this.calcChunkIdByPosition() != this.chunk.id) {
 		return true;
 	}
+};
+
+Avatar.prototype.takeMessage = function(name, messageArguments) {
+	var methodName = config.avatar.messagePrefix + name;
+	if (this[methodName]) this[methodName](messageArguments);
 };
 
 Avatar.prototype._setInput = function(input) {

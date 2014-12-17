@@ -5,6 +5,7 @@ var AvatarLoader = require('./AvatarLoader.js'),
     Graphics = require('./Graphics.js'),
     Input = require('./Input.js'),
     Network = require('./Network.js'),
+    SpriteLoader = require('./SpriteLoader.js'),
     Chunk = require('./Chunk.js'),
     localConfig = require('../config.json'),
 	globalConfig = require('../../common/config.json'),
@@ -26,6 +27,7 @@ var World = function() {
     this._stats = new Stats();
     logger.info('Init graphics module');
     this._graphics = new Graphics();
+    this._spriteLoader = new SpriteLoader();
     this._controlAvatar = null;
     logger.info('Init input module');
     this._input = new Input();
@@ -56,13 +58,17 @@ World.prototype.start = function() {
     this._network.on(config.network.messages.setControlAvatar, this.onSetControlAvatar);
     this._network.on(config.network.messages.updateAvatar, this.onUpdateAvatar);
     
-    this._network.send(config.network.messages.userLogin, {
-        login: 'denis',
-        passwd: 'qwe'
+    logger.info('Loading media');
+    this._spriteLoader.preload(function() {
+        logger.info('Login as `denis`');
+        self._network.send(config.network.messages.userLogin, {
+            login: 'denis',
+            passwd: 'qwe'
+        });
+        
+        logger.info('Start update world main loop');
+        self._step();
     });
-    
-    logger.info('Start update world main loop');
-    this._step();
 };
 
 World.prototype.onUpdateAvatar = function(data, socket) {

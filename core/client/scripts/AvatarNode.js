@@ -55,7 +55,7 @@ AvatarNode.prototype._childrenForeach = function(callback) {
 AvatarNode.prototype.createSprite = function() {
 	var spriteLoader = new SpriteLoader(),
 		self = this;
-	this._sprite = spriteLoader.load(config.avatar.path + '/' + this._avatarType + '/' + this.img);
+	this._sprite = spriteLoader.getAvatarNode(this._avatarType, this.img);
 	
 	this._childrenForeach(function (child) {
 		child.createSprite();

@@ -1,38 +1,73 @@
 var fs = require('fs'),
-    exec = require('child_process').exec,
     browserify = require('browserify');
 
-var avatarFolderify = function() {
+require('../common/util.js');
+
+var startLabel = '// @start',
+    endLabel = '// @end',
+    _configFileName = 'config.json',
+    _localConfig = JSON.parse(fs.readFileSync(__dirname + '/' + _configFileName, 'utf8')),
+    _globalConfig = JSON.parse(fs.readFileSync(__dirname + '/../common/' + _configFileName, 'utf8')),
+    config = _globalConfig.extend(_localConfig);
+
+var avatarList = function() {
     var fileName = 'scripts/AvatarLoader.js',
-        specialRequire = '// @requireAvatarFolder',
-        startLabel = '// @start',
-        endLabel = '// @end',
-        configFileName = 'config.json',
+        specialRequire = '// @requireAvatarList',
         classesVarName = 'classes',
         configsVarName = 'configs';
         
-    var config = JSON.parse(fs.readFileSync(__dirname + '/' + configFileName, 'utf8')),
-        fileContent = fs.readFileSync(__dirname + '/' + fileName, 'utf8'),
-        avatarList = fs.readdirSync(__dirname + '/../../' + config.avatar.path),
+    var fileContent = fs.readFileSync(__dirname + '/' + fileName, 'utf8'),
+        avatarList = config.avatar.list,
         replaceSrc = [specialRequire, startLabel];
     
-    var preparePath = function(path, name, avatarPath) {
-        return path.replace(new RegExp('\\$name', 'g'), name)
-                   .replace(new RegExp('\\$path', 'g'), avatarPath);
+    var preparePath = function(path, type, avatarPath) {
+        return path.replace(new RegExp('\\$type', 'g'), type)
+                   .replace(new RegExp('\\$path', 'g'), avatarPath)
+                   .replace(/\/+/g, '/');
     };
      
-    avatarList.forEach(function(name) {
-        replaceSrc.push(preparePath(classesVarName + "['$name'] = require('../../../$path/$name/client/$name.js');",
-            name, config.avatar.path));
-        replaceSrc.push(preparePath(configsVarName + "['$name'] = require('../../../$path/$name/client/config.json');",
-            name, config.avatar.path));
+    avatarList.each(function(id, type) {
+        replaceSrc.push(preparePath(classesVarName + "['$type'] = require('../../../$path/$type/client/$type.js');",
+            type, config.avatar.path));
+        replaceSrc.push(preparePath(configsVarName + "['$type'] = require('../../../$path/$type/client/config.json');",
+            type, config.avatar.path));
     });
     replaceSrc.push(endLabel);
     
     replaceSrc = replaceSrc.join('\n');
     fileContent = fileContent
-        .replace(new RegExp(startLabel + '[\\s\\S]*' + endLabel, 'gm'), '')
+        .replace(new RegExp(startLabel + '[\\s\\S]*' + endLabel + '\n', 'gm'), '')
         .replace(specialRequire, replaceSrc);
+    fs.writeFileSync(__dirname + '/' + fileName, fileContent, 'utf8');
+};
+
+
+
+var tilesetConfigs = function() {
+    var fileName = 'scripts/SpriteLoader.js',
+        specialRequire = '// @requireTilesetConfigs',
+        configsVarName = 'tilesetConfigs',
+        fileContent = fs.readFileSync(__dirname + '/' + fileName, 'utf8');
+    
+
+	var preloadPathList = [config.map.path + '/' + config.map.tileset.path],
+	    preloadRequireString = [specialRequire, startLabel];
+	config.avatar.list.each(function(id, type) {
+		preloadPathList.push(
+			config.avatar.path + '/' + type + '/' + config.avatar.sprite.path + '/' + config.avatar.sprite.tileset
+		);
+	});
+	
+	preloadPathList.forEach(function(path) {
+	    var line = configsVarName + "['" + path + "'] = require('../../../" + path + ".json');";
+	    preloadRequireString.push(line.replace(/\/+/g, '/'));
+	});
+	preloadRequireString.push(endLabel);
+	preloadRequireString = preloadRequireString.join('\n');
+	
+	fileContent = fileContent
+        .replace(new RegExp(startLabel + '[\\s\\S]*' + endLabel + '\n', 'gm'), '')
+        .replace(specialRequire, preloadRequireString);
     fs.writeFileSync(__dirname + '/' + fileName, fileContent, 'utf8');
 };
 
@@ -48,5 +83,6 @@ var build = function() {
     b.bundle().pipe(fs.createWriteStream(__dirname + '/' + outputFile));
 };
 
-avatarFolderify();
+avatarList();
+tilesetConfigs();
 build();

@@ -1,18 +1,11 @@
 var classes = {},
 	configs = {};
 
-// @_requireAvatarFolder
-// @_start
-// classes['Car'] = require('../../../avatars//Car/client/Car.js');
-// configs['Car'] = require('../../../avatars//Car/client/config.json');
-// classes['Man'] = require('../../../avatars//Man/client/Man.js');
-// configs['Man'] = require('../../../avatars//Man/client/config.json');
-classes['Panzer'] = require('../../../avatars//Panzer/client/Panzer.js');
-configs['Panzer'] = require('../../../avatars//Panzer/client/config.json');
-// classes['Passage'] = require('../../../avatars//Passage/client/Passage.js');
-// configs['Passage'] = require('../../../avatars//Passage/client/config.json');
-// @_end
-
+// @requireAvatarList
+// @start
+classes['Panzer'] = require('../../../avatars/Panzer/client/Panzer.js');
+configs['Panzer'] = require('../../../avatars/Panzer/client/config.json');
+// @end
 
 var AvatarLoader = function() {
 	

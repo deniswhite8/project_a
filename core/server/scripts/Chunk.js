@@ -1,13 +1,13 @@
 var config = null,
 	logger = null;
 
-var Chunk = function(x, y, tiles, chunks) {
+var Chunk = function(x, y, tiles, area) {
 	config = global.config;
 	logger = global.logger;
 	
 	this._tiles = tiles;
 	this._avatars = {};
-	this._chunks = chunks;
+	this._area = area;
 
 	this.x = x;
 	this.y = y;
@@ -42,30 +42,6 @@ Chunk.prototype.removeAvatar = function(avatar) {
 		chunk.broadcast(config.avatar.removeAvatar, avatar.removeMessage(), avatar);
 		chunk.sendData(avatar, 'remove');
 	});
-};
-
-Chunk.prototype.transferAvatar = function(avatar) {
-	if (!avatar || !avatar.id) return;
-
-	var oldChunk = avatar.chunk,
-		newChunk = this._chunks[avatar.calcChunkIdByPosition()];
-
-	if (oldChunk == newChunk) return;
-
-	avatar.chunk = newChunk;
-	delete oldChunk._avatars[avatar.id];
-	newChunk._avatars[avatar.id] = avatar;
-
-	this.symmetricDifferenceVicinityForeach(oldChunk, newChunk,
-		function (chunk) {
-			chunk.broadcast(config.network.messages.removeAvatar, avatar.removeMessage(), avatar);
-			chunk.sendData(avatar, 'remove');
-		},
-		function (chunk) {
-			chunk.broadcast(config.network.messages.newAvatar, avatar.newMessage(), avatar);
-			chunk.sendData(avatar, 'new');
-		}
-	);
 };
 
 Chunk.prototype.broadcast = function(name, data, exceptAvatar) {
@@ -121,38 +97,14 @@ Chunk.prototype.sendData = function(recipientAvatar, type) {
 	recipientAvatar.user.send(msgName, data);
 };
 
-Chunk.prototype.symmetricDifferenceVicinityForeach = function(first, second, callbackForFirst, callbackForSecond) {
-	var forFirst = [], forSecond = [];
-
-	first.vicinityForeach(function (chunk) {
-		forFirst.push(chunk);
-	});
-
-	second.vicinityForeach(function (chunk) {
-		forSecond.push(chunk);
-	});
-
-	for (var i = 0; i < forFirst.length; i++) {
-		for (var j = 0; j < forSecond.length; j++) {
-			if (forFirst[i] == forSecond[j]) {
-				delete forFirst[i];
-				delete forSecond[j];
-			}
-		}
-	}
-
-	forFirst.forEach(callbackForFirst);
-	forSecond.forEach(callbackForSecond);
-};
-
 Chunk.prototype.vicinityForeach = function(callback) {
 	var groupRadius = config.map.groupRadius - 1;
 
 	for(var x = this.x - groupRadius; x < this.x + groupRadius; x++)
 		for(var y = this.y - groupRadius; y < this.y + groupRadius; y++) {
-			var id = x + y * config.map.size;
-			if (!this._chunks[id]) continue;
-			callback(this._chunks[id]);
+			var chunkId = x + y * config.map.size,
+				chunk = this._area.getChunk(chunkId);
+			if (chunk) callback(chunk);
 		}
 };
 
@@ -160,10 +112,19 @@ Chunk.prototype._update = function(callback) {
 	var self = this;
 	this._avatars.each(function(avatarId, avatar) {
 		if (avatar._update()) {
-			self.transferAvatar(avatar);
+			self._area.transferAvatar(avatar);
 		} else {
 			self.broadcastAvatarUpdate(avatar);
 		}
+	});
+};
+
+Chunk.prototype.distanceMessage = function(sourceAvatar, name, messageArguments, distance, filter) {
+	this._avatars.each(function(avatarId, avatar) {
+	    if (Math.pow(avatar.x - sourceAvatar.x, 2) + Math.pow(avatar.y - sourceAvatar.y, 2) > distance * distance)
+	    	return;
+	    if (filter && !filter.call(sourceAvatar, avatar)) return;
+	    avatar.takeMessage(name, messageArguments);
 	});
 };
 

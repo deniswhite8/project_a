@@ -1,5 +1,4 @@
 server & client:
- - ? Map class (add)
  - ? Cached deleted nulls at resore data (fix it)
  - ? more logs (especially warnings for incorrect function arguments)
  - ? dependency injection (include('core/client/Input'))
@@ -8,10 +7,14 @@ server & client:
 server:
  - ! mongo db
  - ! save avatar/user info into table
- - ! avatar distance messages
+ - ? avatar distance messages (check it)
 
 client:
+ - ? Area (Map) class (add)
  - ! linear interpolation
- - ! tint bug
- - ! not always up to date
- - ! tiles
+ - ! sprite frame animation
+ 
+editor:
+ - ! map editor
+     Small zoom: pixel landscape gerenator, pixel = tile
+     Big zoom: tiles editor, with objects

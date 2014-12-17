@@ -16,13 +16,13 @@ Chunk.prototype._createTiles = function() {
     var spriteLoader = new SpriteLoader(),
         self = this;
         
-    this._rootGraphicsNode = spriteLoader.load();
+    this._rootGraphicsNode = spriteLoader.get();
     this._rootGraphicsNode.position.x = this.x * config.map.chunk.size * config.map.chunk.tile.size;
     this._rootGraphicsNode.position.y = this.y * config.map.chunk.size * config.map.chunk.tile.size;
     
     this._tiles.forEach(function(tile, i) {
         if (!tile) return;
-        var tileSprite = spriteLoader.load(config.map.tileset.path + '/' + tile + '.' + config.map.tileset.extension);
+        var tileSprite = spriteLoader.getMapTile(tile);
             
         tileSprite.position.x = (i % config.map.chunk.size) * config.map.chunk.tile.size;
         tileSprite.position.y = Math.floor(i / config.map.chunk.size) * config.map.chunk.tile.size;

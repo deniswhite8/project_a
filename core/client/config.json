@@ -2,20 +2,19 @@
     "network": {
         "host": "http://localhost"
     },
+    "web": {
+    	"crossorigin": null
+    },
 	"control": {
 	    "input": {
 	        "frequencySend": 0.1
 	    }
 	},
-	"map": {
-		"tileset": {
-			"extension": "png"
-		}
-	},
 	"avatar": {
 		"path": "avatars/",
 		"sprite": {
-			"path": "media/"
+			"path": "media/",
+			"tileset": "tileset"
 		}
 	},
 	"sandbox": {

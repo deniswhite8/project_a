@@ -8,12 +8,16 @@
 		},
 		"size": 32,
 		"groupRadius": 2,
+		"path": "map/",
 		"tileset": {
-			"path": "tileset/"
+			"path": "tileset/default"
 		},
 		"distance": {
 			"scale": 100
 		}
+	},
+	"avatar": {
+		"list": ["Panzer"]
 	},
     "network": {
     	"messages": {

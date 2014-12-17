@@ -1,13 +1,11 @@
 {
-	"map" : {
-		"path": "map/"
-	},
 	"table": {
 		"user": "tables/user.json",
 		"avatar": "tables/avatar.json"
 	},
 	"avatar": {
-		"path": "avatars/"
+		"path": "avatars/",
+		"messagePrefix": "on"
 	},
 	"physics": {
 		"iterationsPerUpdate": 10
@@ -23,8 +21,8 @@
     		{"query": "/", "file":"index.html", "root": "core/client/"},
     		{"query": "/min.js", "file":"min.js", "root": "core/client/"},
     		{"query": "/img/logo", "root": "core/client/img/logo"},
-    		{"query": "/tileset", "root": "map/tileset"},
-    		{"query": "/avatars/:avatar/:img", "file":"/:avatar/media/:img", "root": "avatars/"}
+    		{"query": "/map/tileset", "root": "map/tileset"},
+    		{"query": "/avatars/:avatar/media/:tileset", "file":"/:avatar/media/:tileset", "root": "avatars/"}
     	]
     }
 }

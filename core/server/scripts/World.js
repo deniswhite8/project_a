@@ -1,16 +1,15 @@
 require('../../common/util.js');
 
 var Physics = require('./Physics.js'),
+	Area = require('./Area.js'),
 	Network = require('./Network.js'),
 	User = require('./User.js'),
 	Table = require('./Table.js'),
-	Chunk = require('./Chunk.js'),
 	localConfig = require('../config.json'),
 	globalConfig = require('../../common/config.json'),
 	Logger = require('../../common/Logger.js'),
 	PageApp = require('./Page.js'),
 	Connect = require('./Connect.js'),
-	fs = require("fs"),
 	self = null,
 	config = null,
 	logger = null;
@@ -21,7 +20,7 @@ var World = function() {
 	logger = new Logger();
 	global.logger = logger;
 
-	this._chunks = [];
+	this._area = new Area();
 	this._avatars = {};
 	logger.info('Creating world');
 	
@@ -47,7 +46,7 @@ World.prototype.start = function() {
 	this._physics.init();
 	
 	logger.info('Load world map');
-	this.loadMap();
+	this._area.loadMap();
 
 	this._network.on(config.network.messages.userLogin, this.onUserLogin);
 	this._network.on(config.network.messages.userInput, this.onUserInput);
@@ -106,27 +105,10 @@ World.prototype.onUserDisconnect = function(data, socket) {
 	self.removeAvatar(userAvatar);
 };
 
-World.prototype.loadMap = function() {
-	var self = this;
-
-	fs.readdirSync(__dirname + '/../../../' + config.map.path).forEach(function(fileName) {
-		var fullFileName = __dirname + '/../../../' + config.map.path + "/" + fileName;
-		if (fs.lstatSync(fullFileName).isDirectory()) return;
-		
-		var chunkData = require(fullFileName),
-			chunk = new Chunk(chunkData.x, chunkData.y, chunkData.tiles, self._chunks);
-			
-		self._chunks[chunk.id] = chunk;
-	});
-};
-
 World.prototype.addAvatar = function(avatar) {
 	if (!avatar || !avatar.id) return;
 
-	var chunk = this._chunks[avatar.calcChunkIdByPosition()];
-	if (chunk)
-		chunk.addAvatar(avatar);
-
+	this._area.addAvatar(avatar);
 	this._avatars[avatar.id] = avatar;
 };
 
@@ -134,11 +116,7 @@ World.prototype.removeAvatar = function(avatar) {
 	if (!avatar || !avatar.id) return;
 
 	avatar.save();
-
-	var chunk = this._chunks[avatar.calcChunkIdByPosition()];
-	if (chunk)
-		chunk.removeAvatar(avatar);
-
+	this._area.removeAvatar(avatar);
 	delete this._avatars[avatar.id];
 };
 
@@ -167,9 +145,7 @@ World.prototype.loadAvatar = function(id) {
 };
 
 World.prototype._update = function() {
-	self._chunks.forEach(function (chunk) {
-		chunk._update();
-	});
+	self._area.update.call(self._area);
 };
 
 module.exports = World;
